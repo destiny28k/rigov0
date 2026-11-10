@@ -1,171 +1,79 @@
-"use client"
-
-import { useEffect, useRef, useState } from "react"
-import { Lightbulb, Award, Users, Shield } from "lucide-react"
-import { HighlightedText } from "./highlighted-text"
-
+import { Award, Lightbulb, Shield, Users } from "lucide-react"
 
 const values = [
-  {
-    title: "Innovation",
-    description: "Constantly pushing the boundaries of lighting technology to deliver cutting-edge solutions.",
-    icon: Lightbulb,
-  },
-  {
-    title: "Quality Excellence",
-    description: "Uncompromising commitment to premium materials and superior craftsmanship in every product.",
-    icon: Award,
-  },
-  {
-    title: "Customer Focus",
-    description: "Building lasting relationships through exceptional service and tailored lighting solutions.",
-    icon: Users,
-  },
-  {
-    title: "Reliability",
-    description: "Trusted by professionals for consistent performance and long-lasting durability.",
-    icon: Shield,
-  },
+  { label: "Innovation", icon: Lightbulb },
+  { label: "Quality excellence", icon: Award },
+  { label: "Customer focus", icon: Users },
+  { label: "Reliability", icon: Shield },
 ]
 
 const journey = [
-  {
-    year: "2009",
-    title: "Foundation",
-    description:
-      "RIGO Lighting was founded with a vision to revolutionize the lighting industry through innovative LED technology and superior design.",
-  },
-  {
-    year: "2015",
-    title: "Global Expansion",
-    description:
-      "Expanded operations internationally, establishing partnerships with distributors across multiple continents.",
-  },
-  {
-    year: "2020",
-    title: "Innovation Hub",
-    description:
-      "Launched our R&D facility, focusing on smart lighting solutions and sustainable technologies.",
-  },
-  {
-    year: "2024",
-    title: "Future Forward",
-    description:
-      "Continuing to lead with next-generation lighting solutions and an expanding premium product portfolio.",
-  },
+  { year: "2009", title: "Founded", description: "Started with a vision for better LED lighting and design." },
+  { year: "2015", title: "Global expansion", description: "Partnerships with distributors across continents." },
+  { year: "2020", title: "Innovation hub", description: "Launched our R&D facility for smart, sustainable lighting." },
+  { year: "2024", title: "Future forward", description: "Expanding our premium product portfolio." },
 ]
 
-function useReveal(threshold = 0.2) {
-  const [visible, setVisible] = useState<number[]>([])
-  const refs = useRef<(HTMLDivElement | null)[]>([])
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = Number(entry.target.getAttribute("data-index"))
-            setVisible((prev) => (prev.includes(index) ? prev : [...prev, index]))
-          }
-        })
-      },
-      { threshold },
-    )
-    refs.current.forEach((ref) => ref && observer.observe(ref))
-    return () => observer.disconnect()
-  }, [threshold])
-
-  return { visible, refs }
-}
-
-/** About RIGO: intro, what we stand for, and our journey. */
+/** About RIGO — photo + short story, core values, and a horizontal journey timeline. */
 export function About() {
-  const values$ = useReveal()
-  const journey$ = useReveal()
-
   return (
-    <section id="about" className="py-32 md:py-29 bg-secondary/50">
+    <section id="about" className="py-28 md:py-36 scroll-mt-24">
       <div className="container mx-auto px-6 md:px-12">
-        {/* Intro */}
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center mb-24">
-          <div>
-            <p className="text-muted-foreground text-sm tracking-[0.3em] uppercase mb-6">About RIGO</p>
-            <h2 className="text-5xl md:text-6xl font-medium leading-[1.1] tracking-tight mb-8 text-balance lg:text-7xl">
-              Crafting light,
-              <br />
-              creating <HighlightedText>experiences</HighlightedText>
-            </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-              RIGO Lighting has been at the forefront of the lighting industry for over a decade, specializing in
-              premium LED solutions that combine cutting-edge technology with sophisticated design.
-            </p>
-            <p className="text-muted-foreground text-lg leading-relaxed">
-              Our commitment to excellence drives us to continuously innovate, ensuring that every product we create
-              not only meets but exceeds the expectations of architects, designers and lighting professionals.
-            </p>
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div className="overflow-hidden rounded-2xl">
+            <img
+              src="/images/about-room.jpg"
+              alt="Office meeting room lit with recessed downlights and a linear pendant"
+              loading="lazy"
+              className="w-full aspect-[4/3] object-cover"
+            />
           </div>
 
-          <div className="relative">
-            <img
-              src="/images/about.jpg"
-              alt="RIGO COB downlight"
-              className="w-full aspect-[4/3] object-cover rounded-2xl"
-            />
+          <div>
+            <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">About RIGO</p>
+            <h2 className="text-4xl md:text-5xl font-medium leading-[1.1] tracking-tight">
+              Crafting light,
+              <br />
+              creating experiences
+            </h2>
+            <p className="mt-6 text-lg leading-relaxed text-muted-foreground max-w-lg">
+              For over a decade, RIGO has made premium LED lighting that combines cutting-edge technology with
+              sophisticated design — trusted by architects, designers and lighting professionals.
+            </p>
+
+            <ul className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5">
+              {values.map(({ label, icon: Icon }) => (
+                <li key={label} className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary">
+                    <Icon className="h-4 w-4 text-foreground" strokeWidth={1.5} />
+                  </span>
+                  <span className="text-sm font-medium">{label}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        {/* Values + Journey */}
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
-          <div>
-            <h3 className="text-3xl md:text-4xl font-medium tracking-tight mb-4">What we stand for</h3>
-            <p className="text-muted-foreground leading-relaxed mb-12 max-w-md">
-              The principles that shape every fixture we design and every relationship we build.
-            </p>
-            <div className="grid sm:grid-cols-2 gap-x-10 gap-y-12">
-              {values.map((value, index) => {
-                const Icon = value.icon
-                return (
-                  <div
-                    key={value.title}
-                    ref={(el) => {
-                      values$.refs.current[index] = el
-                    }}
-                    data-index={index}
-                    className={`transition-all duration-700 ${
-                      values$.visible.includes(index) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                    }`}
-                    style={{ transitionDelay: `${index * 100}ms` }}
-                  >
-                    <Icon className="w-8 h-8 mb-4 text-foreground" strokeWidth={1.25} />
-                    <h4 className="text-lg font-medium mb-2">{value.title}</h4>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{value.description}</p>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-3xl md:text-4xl font-medium tracking-tight mb-12">Our journey</h3>
-            <div className="space-y-10">
-              {journey.map((item, index) => (
-                <div
-                  key={item.year}
-                  ref={(el) => {
-                    journey$.refs.current[index] = el
-                  }}
-                  data-index={index}
-                  className={`relative pl-8 border-l transition-all duration-700 ${
-                    index === journey.length - 1 ? "border-orange-400" : "border-border"
-                  } ${journey$.visible.includes(index) ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
-                  style={{ transitionDelay: `${index * 100}ms` }}
+        {/* Journey timeline: horizontal on desktop, stacked on phones */}
+        <div className="mt-24 md:mt-28">
+          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-10">Our journey</p>
+          <div className="relative">
+            {/* Desktop: one horizontal line through all the dots */}
+            <div aria-hidden className="hidden lg:block absolute left-0 right-0 top-[5px] h-px bg-border" />
+            <ol className="grid lg:grid-cols-4 lg:gap-8">
+              {journey.map((step) => (
+                // Phones/tablets: vertical timeline with the line down the left
+                <li
+                  key={step.year}
+                  className="relative pl-8 pb-10 last:pb-0 border-l border-border lg:pl-0 lg:pb-0 lg:border-l-0"
                 >
-                  <p className="text-muted-foreground/60 text-sm font-medium mb-1">{item.year}</p>
-                  <h4 className="text-xl font-medium mb-2">{item.title}</h4>
-                  <p className="text-muted-foreground leading-relaxed">{item.description}</p>
-                </div>
+                  <span className="absolute -left-[6px] top-1.5 lg:static z-10 block h-[11px] w-[11px] rounded-full bg-foreground ring-4 ring-background" />
+                  <p className="lg:mt-6 text-2xl lg:text-3xl font-medium tracking-tight tabular-nums">{step.year}</p>
+                  <h3 className="mt-2 font-medium">{step.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{step.description}</p>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
         </div>
       </div>
