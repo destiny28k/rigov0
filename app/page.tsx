@@ -32,8 +32,8 @@ export default function Home() {
       <SiteHeader />
       <Hero />
       <About />
-      <Philosophy />
       <Projects items={featured} />
+      <Philosophy />
       <Expertise />
       <FAQ />
       <CallToAction />
