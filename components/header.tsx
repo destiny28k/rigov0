@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 
 const WECHAT_URL = "https://u.wechat.com/kP_PkMqInEFhHvN6A0ipJ-A?s=4"
+const INSTAGRAM_URL = "https://instagram.com/rigolighting"
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -93,7 +94,7 @@ export function Header() {
           ))}
         </ul>
 
-        <div className="flex items-center gap-4 justify-self-end">
+        <div className="flex items-center gap-3 justify-self-end">
           <a
             href={WECHAT_URL}
             target="_blank"
@@ -103,6 +104,17 @@ export function Header() {
             className="rounded-full transition-transform duration-200 hover:scale-110"
           >
             <Image src="/images/wechat.png" alt="" width={32} height={32} aria-hidden="true" className="w-8 h-8" />
+          </a>
+
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Follow RIGO on Instagram"
+            title="Instagram"
+            className="rounded-lg transition-transform duration-200 hover:scale-110"
+          >
+            <Image src="/images/instagram.png" alt="" width={32} height={32} aria-hidden="true" className="w-8 h-8" />
           </a>
 
           <button
