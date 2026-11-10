@@ -4,18 +4,18 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
-const projects = [
-  { id: 1, title: "Alpha Series", slug: "alpha-series-delta-cob", category: "Delta COB", detail: "Recessed COB downlight", image: "/images/products/alpha.png" },
-  { id: 2, title: "Fusion Series", slug: "fusion-series-curve-cob", category: "Curve COB", detail: "Sculpted curved COB light", image: "/images/products/fusion.png" },
-  { id: 3, title: "Foria Pro Series", slug: "foria-pro-series", category: "COB Light", detail: "Professional-grade COB", image: "/images/products/foria-pro.png" },
-  { id: 4, title: "Luna Series", slug: "luna-series-movable-cob-cylinder-light", category: "Cylinder COB", detail: "Movable COB cylinder light", image: "/images/products/luna.png" },
-  { id: 5, title: "Platina Series", slug: "platina-series-down-light-panel", category: "Panel Light", detail: "16W / 24W / 32W downlight panel", image: "/images/products/platina.png" },
-  { id: 6, title: "Rainbow Series", slug: "rainbow-series-conseal-panel", category: "Panel Light", detail: "Dual-colour concealed panel", image: "/images/products/rainbow.png" },
-]
+export type FeaturedItem = {
+  href: string
+  title: string
+  detail: string
+  category: string
+  image: string
+}
 
-export function Projects() {
-  const [hoveredId, setHoveredId] = useState<number | null>(null)
-  const [revealedImages, setRevealedImages] = useState<Set<number>>(new Set())
+
+export function Projects({ items: projects }: { items: FeaturedItem[] }) {
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const [revealedImages, setRevealedImages] = useState<Set<string>>(new Set())
   const imageRefs = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export function Projects() {
           if (entry.isIntersecting) {
             const index = imageRefs.current.indexOf(entry.target as HTMLDivElement)
             if (index !== -1) {
-              setRevealedImages((prev) => new Set(prev).add(projects[index].id))
+              setRevealedImages((prev) => new Set(prev).add(projects[index].href))
             }
           }
         })
@@ -38,7 +38,7 @@ export function Projects() {
     })
 
     return () => observer.disconnect()
-  }, [])
+  }, [projects])
 
   return (
     <section id="projects" className="py-32 md:py-29 bg-secondary/50">
@@ -60,10 +60,10 @@ export function Projects() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {projects.map((project, index) => (
             <Link
-              href={`/products/${project.slug}`}
-              key={project.id}
+              href={project.href}
+              key={project.href}
               className="group block"
-              onMouseEnter={() => setHoveredId(project.id)}
+              onMouseEnter={() => setHoveredId(project.href)}
               onMouseLeave={() => setHoveredId(null)}
             >
               <div ref={(el) => { imageRefs.current[index] = el }} className="relative overflow-hidden aspect-square mb-6 bg-white rounded-2xl">
@@ -71,13 +71,13 @@ export function Projects() {
                   src={project.image || "/placeholder.svg"}
                   alt={project.title}
                   className={`w-full h-full object-contain p-10 transition-transform duration-700 ${
-                    hoveredId === project.id ? "scale-105" : "scale-100"
+                    hoveredId === project.href ? "scale-105" : "scale-100"
                   }`}
                 />
                 <div
                   className="absolute inset-0 bg-primary origin-top"
                   style={{
-                    transform: revealedImages.has(project.id) ? "scaleY(0)" : "scaleY(1)",
+                    transform: revealedImages.has(project.href) ? "scaleY(0)" : "scaleY(1)",
                     transition: "transform 1.5s cubic-bezier(0.76, 0, 0.24, 1)", // Increased duration from 0.6s to 1.5s for slower reveal
                   }}
                 />

@@ -155,17 +155,6 @@ export function getProduct(slug: string) {
   return products.find((p) => p.slug === slug)
 }
 
-export function getCategories(tab: ProductTab) {
-  return Array.from(new Set(products.filter((p) => p.tab === tab).map((p) => p.category)))
-}
-
-export function getRelatedProducts(product: Product, limit = 4) {
-  const sameTab = products.filter((p) => p.tab === product.tab && p.slug !== product.slug)
-  const sameCategory = sameTab.filter((p) => p.category === product.category)
-  const others = sameTab.filter((p) => p.category !== product.category)
-  return [...sameCategory, ...others].slice(0, limit)
-}
-
 /** Encode a public path that may contain spaces or brackets. */
 export function imageSrc(path: string) {
   return encodeURI(path)
