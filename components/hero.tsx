@@ -1,167 +1,102 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { ArrowDown } from "lucide-react"
+import { ChevronDown, Pause, Play, Volume2, VolumeX } from "lucide-react"
 
+/**
+ * Homepage hero: the RIGO brand film, full-bleed and cinematic.
+ *
+ * The film has its own titles, so it is never covered with text or cropped:
+ * - Desktop: edge to edge behind the floating navbar. Height is min(screen height, 16:9 of the width),
+ *   so the whole frame is always visible (wider-than-16:9 screens get only a slight top/bottom trim).
+ * - Phones: full width at its natural 16:9 shape, starting below the navbar so the bar doesn't hide it.
+ * Autoplays muted on loop; visitors can pause it or turn the sound on.
+ */
 export function Hero() {
-  const contentRef = useRef<HTMLDivElement>(null)
-  const heroRef = useRef<HTMLElement>(null)
-  const titleRef = useRef<HTMLHeadingElement>(null)
-  const [animationProgress, setAnimationProgress] = useState(0)
-  const [animationComplete, setAnimationComplete] = useState(false)
-  const accumulatedScrollRef = useRef(0)
-  const touchStartY = useRef<number>(0)
-  const lastTouchY = useRef<number>(0)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [playing, setPlaying] = useState(false)
+  const [muted, setMuted] = useState(true)
 
   useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      const atTopOfPage = window.scrollY === 0
+    const video = videoRef.current
+    if (!video) return
+    // React doesn't always write the `muted` attribute into the HTML, and browsers only autoplay muted video.
+    video.muted = true
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    if (!reduceMotion) video.play().catch(() => setPlaying(false))
+  }, [])
 
-      if (atTopOfPage && !animationComplete) {
-        e.preventDefault()
+  const togglePlay = () => {
+    const video = videoRef.current
+    if (!video) return
+    if (video.paused) video.play().catch(() => {})
+    else video.pause()
+  }
 
-        accumulatedScrollRef.current = Math.max(0, Math.min(700, accumulatedScrollRef.current + e.deltaY))
+  const toggleSound = () => {
+    const video = videoRef.current
+    if (!video) return
+    video.muted = !video.muted
+    setMuted(video.muted)
+    if (!video.muted && video.paused) video.play().catch(() => {})
+  }
 
-        const newProgress = Math.max(0, Math.min(1, accumulatedScrollRef.current / 700))
-        setAnimationProgress(newProgress)
-
-        if (newProgress >= 1) {
-          setAnimationComplete(true)
-        }
-
-        if (contentRef.current) {
-          const translateY = newProgress * 200
-          const rotationX = newProgress * 45
-          const scale = 1 - newProgress * 0.3
-          contentRef.current.style.transform = `translateY(${translateY}px) rotateX(${rotationX}deg) scale(${scale})`
-        }
-      } else if (atTopOfPage && animationComplete && e.deltaY < 0) {
-        e.preventDefault()
-
-        accumulatedScrollRef.current = Math.max(0, Math.min(700, accumulatedScrollRef.current + e.deltaY))
-
-        const newProgress = Math.max(0, Math.min(1, accumulatedScrollRef.current / 700))
-        setAnimationProgress(newProgress)
-
-        if (newProgress < 1) {
-          setAnimationComplete(false)
-        }
-
-        if (contentRef.current) {
-          const translateY = newProgress * 200
-          const rotationX = newProgress * 45
-          const scale = 1 - newProgress * 0.3
-          contentRef.current.style.transform = `translateY(${translateY}px) rotateX(${rotationX}deg) scale(${scale})`
-        }
-      }
-    }
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY.current = e.touches[0].clientY
-      lastTouchY.current = e.touches[0].clientY
-    }
-
-    const handleTouchMove = (e: TouchEvent) => {
-      const atTopOfPage = window.scrollY === 0
-      const currentTouchY = e.touches[0].clientY
-      const deltaY = lastTouchY.current - currentTouchY
-
-      if (atTopOfPage && !animationComplete) {
-        e.preventDefault()
-
-        accumulatedScrollRef.current = Math.max(0, Math.min(700, accumulatedScrollRef.current + deltaY * 3))
-
-        const newProgress = Math.max(0, Math.min(1, accumulatedScrollRef.current / 700))
-        setAnimationProgress(newProgress)
-
-        if (newProgress >= 1) {
-          setAnimationComplete(true)
-        }
-
-        if (contentRef.current) {
-          const translateY = newProgress * 200
-          const rotationX = newProgress * 45
-          const scale = 1 - newProgress * 0.3
-          contentRef.current.style.transform = `translateY(${translateY}px) rotateX(${rotationX}deg) scale(${scale})`
-        }
-      } else if (atTopOfPage && animationComplete && deltaY < 0) {
-        e.preventDefault()
-
-        accumulatedScrollRef.current = Math.max(0, Math.min(700, accumulatedScrollRef.current + deltaY * 3))
-
-        const newProgress = Math.max(0, Math.min(1, accumulatedScrollRef.current / 700))
-        setAnimationProgress(newProgress)
-
-        if (newProgress < 1) {
-          setAnimationComplete(false)
-        }
-
-        if (contentRef.current) {
-          const translateY = newProgress * 200
-          const rotationX = newProgress * 45
-          const scale = 1 - newProgress * 0.3
-          contentRef.current.style.transform = `translateY(${translateY}px) rotateX(${rotationX}deg) scale(${scale})`
-        }
-      }
-
-      lastTouchY.current = currentTouchY
-    }
-
-    window.addEventListener("wheel", handleWheel, { passive: false })
-    window.addEventListener("touchstart", handleTouchStart, { passive: false })
-    window.addEventListener("touchmove", handleTouchMove, { passive: false })
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel)
-      window.removeEventListener("touchstart", handleTouchStart)
-      window.removeEventListener("touchmove", handleTouchMove)
-    }
-  }, [animationComplete])
+  const buttonClass =
+    "flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md border border-white/15 transition-all duration-300 hover:bg-black/75 hover:border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
 
   return (
-    <section id="hero" ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <img
-          src="/images/hero.jpg"
-          alt="Living room warmly lit with RIGO pendant and accent lighting"
-          className="w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70" />
-      </div>
+    <section id="hero" className="relative bg-primary pt-24 md:pt-0">
+      {/* The film's titles aren't readable by search engines or screen readers, so describe the page here */}
+      <h1 className="sr-only">RIGO LED Lighting — premium LED lights for homes, offices and outdoor spaces</h1>
 
-      <div
-        ref={contentRef}
-        className="container mx-auto px-6 md:px-12 lg:pt-0 relative z-10 pb-0 pl-1 pr-1 pt-8 md:pt-0"
-        style={{
-          willChange: "transform",
-          transform: "translateY(0px)",
-          perspective: "1000px",
-          transformStyle: "preserve-3d",
-        }}
-      >
-        <div>
-          <p className="text-sm tracking-[0.3em] uppercase text-center text-secondary mb-6">{"RIGO LED Lighting"}</p>
+      <div className="relative w-full overflow-hidden bg-black aspect-video md:aspect-auto md:h-[min(100svh,56.25vw)] md:min-h-[480px]">
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          poster="/videos/rigo-hero-poster.jpg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-label="RIGO brand film: precision downlights, Glow and Platina panel series and outdoor flood lights"
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+        >
+          <source src="/videos/rigo-hero-1080.mp4" type="video/mp4" media="(min-width: 768px)" />
+          <source src="/videos/rigo-hero-720.mp4" type="video/mp4" />
+        </video>
 
-          <h1
-            ref={titleRef}
-            className="text-5xl sm:text-7xl font-medium text-balance text-center text-white mb-0 tracking-tight leading-[0.95] sm:leading-[0.9] lg:text-8xl"
+        {/* Scroll cue (desktop) */}
+        <a
+          href="#range"
+          aria-label="Scroll to products"
+          className="hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2 h-11 w-11 items-center justify-center rounded-full bg-black/40 text-white/80 backdrop-blur-md border border-white/15 transition-colors hover:text-white hover:bg-black/60"
+        >
+          <ChevronDown className="h-5 w-5 animate-bounce" />
+        </a>
+
+        {/* Video controls */}
+        <div className="absolute bottom-3 right-3 md:bottom-6 md:right-6 flex gap-2">
+          <button
+            type="button"
+            onClick={togglePlay}
+            aria-label={playing ? "Pause video" : "Play video"}
+            className={buttonClass}
           >
-            {"Light that"}
-            <br />
-            <span className="text-orange-200">{"elevates every space"}</span>
-          </h1>
-          <p className="mt-8 text-center text-white/80 text-lg max-w-xl mx-auto">
-            {"Premium LED panels, COB downlights and spotlights for homes, offices and commercial spaces."}
-          </p>
+            {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-px" />}
+          </button>
+          <button
+            type="button"
+            onClick={toggleSound}
+            aria-label={muted ? "Turn sound on" : "Turn sound off"}
+            aria-pressed={!muted}
+            className={buttonClass}
+          >
+            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
         </div>
       </div>
-
-
-      {animationComplete && (
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-bounce z-30">
-          <ArrowDown className="w-5 h-5 text-white/80" />
-        </div>
-      )}
     </section>
   )
 }

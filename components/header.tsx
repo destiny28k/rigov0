@@ -27,18 +27,10 @@ export function Header({ menu }: { menu: MenuTab[] }) {
   const isHome = pathname === "/"
   const productsActive = pathname.startsWith("/products")
 
-  const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(false)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50)
-    handleScroll()
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
 
   // Close menus on navigation
   useEffect(() => {
@@ -72,18 +64,10 @@ export function Header({ menu }: { menu: MenuTab[] }) {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  // Inner pages have a light background, so the header is always solid there
-  const solid = scrolled || mobileMenuOpen || megaOpen || !isHome
-
+  // Every page (including the homepage, whose hero is now a framed video on the light background)
+  // uses the solid floating bar, so the white menu text is always readable.
   return (
-    <header
-      className={cn(
-        "fixed z-50 transition-all duration-500 my-0 py-0 rounded-none",
-        solid
-          ? "bg-primary backdrop-blur-md py-4 top-4 left-4 right-4 rounded-2xl"
-          : "bg-transparent py-4 top-0 left-0 right-0",
-      )}
-    >
+    <header className="fixed z-50 top-4 left-4 right-4 rounded-2xl bg-primary backdrop-blur-md py-4">
       <nav className="container mx-auto px-6 flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:px-[24]">
         <Link href="/" className="flex items-center gap-2 group justify-self-start" onClick={handleHomeClick}>
           <Image
