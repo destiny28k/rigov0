@@ -3,6 +3,13 @@
 import { useEffect, useRef, useState } from "react"
 import { HighlightedText } from "./highlighted-text"
 
+const stats = [
+  { number: "15+", label: "Years of Excellence" },
+  { number: "10,000+", label: "Projects Completed" },
+  { number: "500+", label: "Product Variants" },
+  { number: "50+", label: "Countries Served" },
+]
+
 const philosophyItems = [
   {
     title: "Energy efficient",
@@ -100,6 +107,16 @@ export function Philosophy() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Stats */}
+        <div className="mt-24 grid grid-cols-2 lg:grid-cols-4 gap-px bg-border border border-border rounded-2xl overflow-hidden">
+          {stats.map((stat) => (
+            <div key={stat.label} className="bg-background p-8 md:p-10 text-center">
+              <p className="text-4xl md:text-5xl font-medium tracking-tight mb-2">{stat.number}</p>
+              <p className="text-muted-foreground text-sm">{stat.label}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

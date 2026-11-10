@@ -1,10 +1,10 @@
 import { SiteHeader } from "@/components/site-header"
 import { Hero } from "@/components/hero"
-import { About, AboutValues } from "@/components/about"
+import { About } from "@/components/about"
 import { Philosophy } from "@/components/philosophy"
 import { Projects, type FeaturedItem } from "@/components/projects"
 import { getSeries } from "@/lib/catalog"
-import { Expertise } from "@/components/expertise"
+import { ShopByCategory } from "@/components/shop-by-category"
 import { FAQ } from "@/components/faq"
 import { CallToAction } from "@/components/call-to-action"
 import { Footer } from "@/components/footer"
@@ -31,11 +31,10 @@ export default function Home() {
     <main className="min-h-screen">
       <SiteHeader />
       <Hero />
-      <About />
+      <ShopByCategory />
       <Projects items={featured} />
-      <AboutValues />
       <Philosophy />
-      <Expertise />
+      <About />
       <FAQ />
       <CallToAction />
       <Footer />

@@ -4,12 +4,6 @@ import { useEffect, useRef, useState } from "react"
 import { Lightbulb, Award, Users, Shield } from "lucide-react"
 import { HighlightedText } from "./highlighted-text"
 
-const stats = [
-  { number: "15+", label: "Years of Excellence" },
-  { number: "10,000+", label: "Projects Completed" },
-  { number: "500+", label: "Product Variants" },
-  { number: "50+", label: "Countries Served" },
-]
 
 const values = [
   {
@@ -84,10 +78,13 @@ function useReveal(threshold = 0.2) {
   return { visible, refs }
 }
 
-/** About intro + stats. */
+/** About RIGO: intro, what we stand for, and our journey. */
 export function About() {
+  const values$ = useReveal()
+  const journey$ = useReveal()
+
   return (
-    <section id="about" className="py-32 md:py-29">
+    <section id="about" className="py-32 md:py-29 bg-secondary/50">
       <div className="container mx-auto px-6 md:px-12">
         {/* Intro */}
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center mb-24">
@@ -117,28 +114,6 @@ export function About() {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-border border border-border rounded-2xl overflow-hidden">
-          {stats.map((stat) => (
-            <div key={stat.label} className="bg-background p-8 md:p-10 text-center">
-              <p className="text-4xl md:text-5xl font-medium tracking-tight mb-2">{stat.number}</p>
-              <p className="text-muted-foreground text-sm">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/** "What we stand for" + "Our journey" (shown after Featured Products on the homepage). */
-export function AboutValues() {
-  const values$ = useReveal()
-  const journey$ = useReveal()
-
-  return (
-    <section id="values" className="py-32 md:py-29">
-      <div className="container mx-auto px-6 md:px-12">
         {/* Values + Journey */}
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
           <div>
