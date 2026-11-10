@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { ChevronDown, Pause, Play, Volume2, VolumeX } from "lucide-react"
+import { ChevronDown, Pause, Play } from "lucide-react"
 
 /**
  * Homepage hero: the RIGO brand film, full-bleed and cinematic.
@@ -10,12 +10,11 @@ import { ChevronDown, Pause, Play, Volume2, VolumeX } from "lucide-react"
  * - Desktop: edge to edge behind the floating navbar. Height is min(screen height, 16:9 of the width),
  *   so the whole frame is always visible (wider-than-16:9 screens get only a slight top/bottom trim).
  * - Phones: full width at its natural 16:9 shape, starting below the navbar so the bar doesn't hide it.
- * Autoplays muted on loop; visitors can pause it or turn the sound on.
+ * Silent film: autoplays muted on loop; visitors can pause it.
  */
 export function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [playing, setPlaying] = useState(false)
-  const [muted, setMuted] = useState(true)
 
   useEffect(() => {
     const video = videoRef.current
@@ -33,38 +32,30 @@ export function Hero() {
     else video.pause()
   }
 
-  const toggleSound = () => {
-    const video = videoRef.current
-    if (!video) return
-    video.muted = !video.muted
-    setMuted(video.muted)
-    if (!video.muted && video.paused) video.play().catch(() => {})
-  }
-
   const buttonClass =
     "flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md border border-white/15 transition-all duration-300 hover:bg-black/75 hover:border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
 
   return (
-    <section id="hero" className="relative bg-primary pt-24 md:pt-0">
+    <section id="hero" className="relative bg-background pt-24 md:pt-0">
       {/* The film's titles aren't readable by search engines or screen readers, so describe the page here */}
       <h1 className="sr-only">RIGO LED Lighting — premium LED lights for homes, offices and outdoor spaces</h1>
 
-      <div className="relative w-full overflow-hidden bg-black aspect-video md:aspect-auto md:h-[min(100svh,56.25vw)] md:min-h-[480px]">
+      <div className="relative w-full overflow-hidden bg-[#f1ece4] aspect-video md:aspect-auto md:h-[min(100svh,56.25vw)] md:min-h-[480px]">
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
-          poster="/videos/rigo-hero-poster.jpg"
+          poster="/videos/rigo-brand-poster.jpg"
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
-          aria-label="RIGO brand film: precision downlights, Glow and Platina panel series and outdoor flood lights"
+          aria-label="RIGO product film: the downlight, panel light, and flood and street light collections"
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
         >
-          <source src="/videos/rigo-hero-1080.mp4" type="video/mp4" media="(min-width: 768px)" />
-          <source src="/videos/rigo-hero-720.mp4" type="video/mp4" />
+          <source src="/videos/rigo-brand-1080.mp4" type="video/mp4" media="(min-width: 768px)" />
+          <source src="/videos/rigo-brand-720.mp4" type="video/mp4" />
         </video>
 
         {/* Scroll cue (desktop) */}
@@ -85,15 +76,6 @@ export function Hero() {
             className={buttonClass}
           >
             {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-px" />}
-          </button>
-          <button
-            type="button"
-            onClick={toggleSound}
-            aria-label={muted ? "Turn sound on" : "Turn sound off"}
-            aria-pressed={!muted}
-            className={buttonClass}
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
         </div>
       </div>
