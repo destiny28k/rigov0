@@ -13,8 +13,14 @@ import type { MenuTab } from "@/lib/catalog"
 const WECHAT_URL = "https://u.wechat.com/kP_PkMqInEFhHvN6A0ipJ-A?s=4"
 const INSTAGRAM_URL = "https://instagram.com/rigolighting"
 
-const linkClass =
-  "hover:text-[rgb(251,146,60)] transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-px hover:after:w-full after:bg-[rgb(251,146,60)] after:transition-all after:duration-300"
+/** Small spaced capitals, soft white that brightens on hover; the current page gets a small dot underneath. */
+function navLinkClass(active: boolean, open = false) {
+  return cn(
+    "relative inline-flex items-center gap-1.5 py-2 text-[12px] font-medium uppercase tracking-[0.22em] transition-colors duration-300 hover:text-white",
+    "after:absolute after:left-1/2 after:-bottom-1 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-white after:transition-opacity after:duration-300",
+    active ? "text-white after:opacity-100" : cn(open ? "text-white" : "text-white/65", "after:opacity-0"),
+  )
+}
 
 export function Header({ menu }: { menu: MenuTab[] }) {
   const pathname = usePathname()
@@ -90,14 +96,14 @@ export function Header({ menu }: { menu: MenuTab[] }) {
           />
         </Link>
 
-        <ul className="hidden md:flex items-center justify-center gap-10 text-sm tracking-wide">
+        <ul className="hidden md:flex items-center justify-center gap-12">
           <li>
-            <Link href="/" onClick={handleHomeClick} className={cn(linkClass, "text-white after:w-0")}>
+            <Link href="/" onClick={handleHomeClick} className={navLinkClass(isHome)}>
               Home
             </Link>
           </li>
           <li>
-            <Link href="/#about" className={cn(linkClass, "text-white after:w-0")}>
+            <Link href="/#about" className={navLinkClass(false)}>
               About Us
             </Link>
           </li>
@@ -107,25 +113,24 @@ export function Header({ menu }: { menu: MenuTab[] }) {
               aria-expanded={megaOpen}
               aria-controls="products-menu"
               onClick={() => (megaOpen ? setMegaOpen(false) : openMega())}
-              className={cn(
-                linkClass,
-                "inline-flex items-center gap-1",
-                productsActive || megaOpen ? "text-[rgb(251,146,60)] after:w-full" : "text-white after:w-0",
-              )}
+              className={navLinkClass(productsActive, megaOpen)}
             >
               Products
-              <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-300", megaOpen && "rotate-180")} />
+              <ChevronDown
+                className={cn("w-3 h-3 opacity-70 transition-transform duration-300", megaOpen && "rotate-180")}
+                strokeWidth={2}
+              />
             </button>
 
             {/* Products dropdown: Indoor / Outdoor only; categories and series live on those pages */}
             <div
               id="products-menu"
               className={cn(
-                "absolute left-1/2 top-full -translate-x-1/2 pt-6 w-44 transition-all duration-300",
+                "absolute left-1/2 top-full -translate-x-1/2 pt-6 w-52 transition-all duration-300",
                 megaOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2 pointer-events-none",
               )}
             >
-              <ul className="bg-primary rounded-xl border border-white/10 shadow-xl py-2 text-sm tracking-wide">
+              <ul className="bg-primary rounded-xl border border-white/10 shadow-xl py-3 text-[12px] font-medium uppercase tracking-[0.18em]">
                 {[...menu, { name: "All Products", href: "/products" }].map((item, i) => {
                   const active = item.href === "/products" ? pathname === "/products" : pathname.startsWith(item.href)
                   return (
@@ -134,8 +139,8 @@ export function Header({ menu }: { menu: MenuTab[] }) {
                         href={item.href}
                         aria-current={pathname === item.href ? "page" : undefined}
                         className={cn(
-                          "block px-5 py-2 transition-colors duration-300 hover:text-[rgb(251,146,60)]",
-                          active ? "text-[rgb(251,146,60)]" : "text-white/80",
+                          "block px-6 py-2.5 transition-colors duration-300 hover:text-white",
+                          active ? "text-white" : "text-white/65",
                         )}
                       >
                         {item.name}
@@ -147,7 +152,7 @@ export function Header({ menu }: { menu: MenuTab[] }) {
             </div>
           </li>
           <li>
-            <Link href="/#contact" className={cn(linkClass, "text-white after:w-0")}>
+            <Link href="/#contact" className={navLinkClass(false)}>
               Contact
             </Link>
           </li>
@@ -212,7 +217,7 @@ export function Header({ menu }: { menu: MenuTab[] }) {
               <Link
                 href="/"
                 onClick={handleHomeClick}
-                className="hover:text-[rgb(251,146,60)] transition-colors text-4xl font-light block"
+                className="text-white/80 hover:text-white transition-colors text-4xl font-light block"
               >
                 Home
               </Link>
@@ -221,7 +226,7 @@ export function Header({ menu }: { menu: MenuTab[] }) {
               <Link
                 href="/#about"
                 onClick={closeMobileMenu}
-                className="hover:text-[rgb(251,146,60)] transition-colors text-4xl font-light block"
+                className="text-white/80 hover:text-white transition-colors text-4xl font-light block"
               >
                 About Us
               </Link>
@@ -233,7 +238,7 @@ export function Header({ menu }: { menu: MenuTab[] }) {
                 onClick={() => setMobileProductsOpen(!mobileProductsOpen)}
                 className={cn(
                   "flex w-full items-center justify-between text-4xl font-light transition-colors",
-                  productsActive ? "text-[rgb(251,146,60)]" : "hover:text-[rgb(251,146,60)]",
+                  productsActive ? "text-white" : "text-white/80 hover:text-white",
                 )}
               >
                 Products
@@ -253,8 +258,8 @@ export function Header({ menu }: { menu: MenuTab[] }) {
                           href={item.href}
                           onClick={closeMobileMenu}
                           className={cn(
-                            "block text-2xl font-light transition-colors hover:text-[rgb(251,146,60)]",
-                            active ? "text-[rgb(251,146,60)]" : "text-white/80",
+                            "block text-2xl font-light transition-colors hover:text-white",
+                            active ? "text-white" : "text-white/60",
                           )}
                         >
                           {item.name}
@@ -269,7 +274,7 @@ export function Header({ menu }: { menu: MenuTab[] }) {
               <Link
                 href="/#contact"
                 onClick={closeMobileMenu}
-                className="hover:text-[rgb(251,146,60)] transition-colors text-4xl font-light block"
+                className="text-white/80 hover:text-white transition-colors text-4xl font-light block"
               >
                 Contact
               </Link>
