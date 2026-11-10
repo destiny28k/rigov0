@@ -11,10 +11,16 @@ import { cn } from "@/lib/utils"
 export function SpotlightCard({
   className,
   contentClassName,
+  radius = 280,
+  strength = 0.13,
   children,
 }: {
   className?: string
   contentClassName?: string
+  /** Size of the light circle in px */
+  radius?: number
+  /** Opacity of the light at its centre */
+  strength?: number
   children: React.ReactNode
 }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -33,8 +39,7 @@ export function SpotlightCard({
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
-          background:
-            "radial-gradient(280px circle at var(--spot-x, 50%) var(--spot-y, 0%), rgba(255, 238, 210, 0.13), transparent 70%)",
+          background: `radial-gradient(${radius}px circle at var(--spot-x, 50%) var(--spot-y, 0%), rgba(255, 238, 210, ${strength}), transparent 70%)`,
         }}
       />
       <div className={cn("relative", contentClassName)}>{children}</div>
