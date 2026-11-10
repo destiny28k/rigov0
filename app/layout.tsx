@@ -1,10 +1,18 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist_Mono } from "next/font/google"
+import localFont from "next/font/local"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+// Satoshi by Indian Type Foundry (Fontshare), self-hosted under the ITF Free Font License.
+// One variable file covers every weight from Light (300) to Black (900).
+const satoshi = localFont({
+  src: "./fonts/Satoshi-Variable.woff2",
+  weight: "300 900",
+  style: "normal",
+  display: "swap",
+  variable: "--font-satoshi",
+})
 
 export const metadata: Metadata = {
   title: "RIGO Lighting — Premium LED Lighting Solutions",
@@ -25,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={satoshi.variable}>
       <body className="font-sans antialiased">
         {children}
         <Analytics />

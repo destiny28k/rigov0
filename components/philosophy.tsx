@@ -91,7 +91,7 @@ export function Philosophy() {
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <div className="flex gap-6">
-                  <span className="text-muted-foreground/50 text-sm font-medium">0{index + 1}</span>
+                  <span className="w-6 shrink-0 pt-1 text-muted-foreground/50 text-sm font-medium tabular-nums">0{index + 1}</span>
                   <div>
                     <h3 className="text-xl font-medium mb-3">{item.title}</h3>
                     <p className="text-muted-foreground leading-relaxed">{item.description}</p>
