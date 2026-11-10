@@ -1,4 +1,7 @@
 import { SiteHeader } from "@/components/site-header"
+import { JsonLd } from "@/components/json-ld"
+import { organizationJsonLd, pageMetadata } from "@/lib/seo"
+import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site"
 import { Hero } from "@/components/hero"
 import { About } from "@/components/about"
 import { Philosophy } from "@/components/philosophy"
@@ -8,6 +11,13 @@ import { ShopByCategory } from "@/components/shop-by-category"
 import { FAQ } from "@/components/faq"
 import { CallToAction } from "@/components/call-to-action"
 import { Footer } from "@/components/footer"
+
+export const metadata = pageMetadata({
+  title: `${SITE_NAME} — Premium LED Lighting Solutions`,
+  description: SITE_DESCRIPTION,
+  path: "/",
+  absoluteTitle: true,
+})
 
 // Hand-picked for the homepage; links and categories come from the catalogue so they stay in sync.
 const FEATURED = [
@@ -29,6 +39,7 @@ const featured: FeaturedItem[] = FEATURED.map(({ path, detail, image }) => {
 export default function Home() {
   return (
     <main className="min-h-screen">
+      <JsonLd data={organizationJsonLd()} />
       <SiteHeader />
       <Hero />
       <ShopByCategory />

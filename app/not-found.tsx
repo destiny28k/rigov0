@@ -6,7 +6,8 @@ import { Footer } from "@/components/footer"
 import { catalog } from "@/lib/catalog"
 
 export const metadata: Metadata = {
-  title: "Page not found — RIGO Lighting",
+  title: "Page not found",
+  robots: { index: false, follow: true },
 }
 
 /** Branded 404: same dark band and warm light effect as Why RIGO / Get in Touch. */

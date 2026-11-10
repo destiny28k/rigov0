@@ -9,7 +9,9 @@ import { ProductCard } from "@/components/product-card"
 import { ProductGallery } from "@/components/product-gallery"
 import { VersionPanel, VersionProvider, VersionSwitch } from "@/components/version-switch"
 import { allSeries, getRelatedSeries, getSeries, seriesSubtitle, type Version } from "@/lib/catalog"
-import { fieldLabel, imageSrc } from "@/lib/products"
+import { fieldLabel } from "@/lib/products"
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo"
+import { JsonLd } from "@/components/json-ld"
 
 type Params = { tab: string; category: string; series: string }
 
@@ -24,15 +26,13 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const series = getSeries(tab, category, slug)
   if (!series) return {}
   const first = series.versions[0]
-  return {
-    title: `${series.title} — ${series.category.name} | RIGO Lighting`,
-    description: first.description,
-    openGraph: {
-      title: `${series.title} — ${series.category.name}`,
-      description: first.description,
-      images: [imageSrc(series.image)],
-    },
-  }
+  return pageMetadata({
+    title: `${series.title} — ${series.category.name}`,
+    // Lead with the series-specific details so every product page has a unique description
+    description: `${series.title} (${seriesSubtitle(series)}) from RIGO's ${series.category.name} range. ${first.description}`,
+    path: series.href,
+    image: series.image,
+  })
 }
 
 const WHATSAPP_NUMBER = "918369051700"
@@ -57,6 +57,15 @@ export default async function SeriesPage({ params }: { params: Promise<Params> }
 
   return (
     <main className="min-h-screen">
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Products", path: "/products" },
+          { name: tab.name, path: tab.href },
+          { name: category.name, path: category.href },
+          { name: series.title, path: series.href },
+        ])}
+      />
       <SiteHeader />
 
       <VersionProvider labels={versions.map((v) => v.label)} anchors={versions.map((v) => v.anchor)}>

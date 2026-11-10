@@ -1,12 +1,14 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { ContactList, LegalPage, LegalSection } from "@/components/legal-page"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "Privacy Policy — RIGO Lighting",
+export const metadata: Metadata = pageMetadata({
+  title: "Privacy Policy",
   description:
     "How RIGO Lighting collects, uses and protects the personal information you share with us through WhatsApp, email and this website.",
-}
+  path: "/privacy-policy",
+})
 
 // Update this whenever the policy text changes.
 const LAST_UPDATED = "10 November 2026"

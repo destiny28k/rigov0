@@ -6,6 +6,8 @@ import { Footer } from "@/components/footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { ProductCard } from "@/components/product-card"
 import { catalog, getCategory, seriesSubtitle } from "@/lib/catalog"
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo"
+import { JsonLd } from "@/components/json-ld"
 import { cn } from "@/lib/utils"
 
 type Params = { tab: string; category: string }
@@ -20,10 +22,12 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { tab, category: slug } = await params
   const category = getCategory(tab, slug)
   if (!category) return {}
-  return {
-    title: `${category.name} — ${category.tab.name} Lighting | RIGO Lighting`,
+  return pageMetadata({
+    title: `${category.name} — ${category.tab.name} LED Lighting`,
     description: `${category.description} Series: ${category.series.map((s) => s.name).join(", ")}.`,
-  }
+    path: category.href,
+    image: category.image,
+  })
 }
 
 export default async function CategoryPage({ params }: { params: Promise<Params> }) {
@@ -34,6 +38,14 @@ export default async function CategoryPage({ params }: { params: Promise<Params>
 
   return (
     <main className="min-h-screen">
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Products", path: "/products" },
+          { name: tab.name, path: tab.href },
+          { name: category.name, path: category.href },
+        ])}
+      />
       <SiteHeader />
 
       <section className="pt-36 pb-24 md:pt-44">

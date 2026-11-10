@@ -8,6 +8,8 @@ import { HighlightedText } from "@/components/highlighted-text"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { CategoryGrid } from "@/components/category-grid"
 import { catalog, getTab } from "@/lib/catalog"
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo"
+import { JsonLd } from "@/components/json-ld"
 
 type Params = { tab: string }
 
@@ -20,10 +22,7 @@ export function generateStaticParams(): Params[] {
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const tab = getTab((await params).tab)
   if (!tab) return {}
-  return {
-    title: `${tab.name} Lighting — RIGO Lighting`,
-    description: tab.description,
-  }
+  return pageMetadata({ title: `${tab.name} LED Lighting`, description: tab.description, path: tab.href })
 }
 
 export default async function TabPage({ params }: { params: Promise<Params> }) {
@@ -33,6 +32,13 @@ export default async function TabPage({ params }: { params: Promise<Params> }) {
 
   return (
     <main className="min-h-screen">
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Products", path: "/products" },
+          { name: tab.name, path: tab.href },
+        ])}
+      />
       <SiteHeader />
 
       <section className="pt-36 pb-32 md:pt-44">

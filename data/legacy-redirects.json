@@ -1,0 +1,150 @@
+[
+  {
+    "source": "/product/1",
+    "destination": "/products/indoor/panel-light/deco"
+  },
+  {
+    "source": "/product/2",
+    "destination": "/products/indoor/panel-light/deco#surface"
+  },
+  {
+    "source": "/product/3",
+    "destination": "/products/indoor/panel-light/glow#surface"
+  },
+  {
+    "source": "/product/4",
+    "destination": "/products/indoor/panel-light/neo"
+  },
+  {
+    "source": "/product/5",
+    "destination": "/products/indoor/panel-light/glow"
+  },
+  {
+    "source": "/product/6",
+    "destination": "/products/indoor/panel-light/rainbow"
+  },
+  {
+    "source": "/product/7",
+    "destination": "/products/indoor/panel-light/rainbow#surface"
+  },
+  {
+    "source": "/product/8",
+    "destination": "/products/indoor/downlight/platina"
+  },
+  {
+    "source": "/product/9",
+    "destination": "/products/indoor/deep-downlight/prima"
+  },
+  {
+    "source": "/product/10",
+    "destination": "/products/indoor/downlight/olive"
+  },
+  {
+    "source": "/product/11",
+    "destination": "/products/indoor/cob-light/alpha"
+  },
+  {
+    "source": "/product/12",
+    "destination": "/products/indoor/cob-light/ador"
+  },
+  {
+    "source": "/product/13",
+    "destination": "/products/indoor/cob-light/fusion"
+  },
+  {
+    "source": "/product/14",
+    "destination": "/products/indoor/cob-light/nexus"
+  },
+  {
+    "source": "/product/16",
+    "destination": "/products/indoor/cob-premium-light/della"
+  },
+  {
+    "source": "/product/17",
+    "destination": "/products/indoor/cob-premium-light/foria"
+  },
+  {
+    "source": "/product/18",
+    "destination": "/products/indoor/cob-premium-light/foria-pro"
+  },
+  {
+    "source": "/product/19",
+    "destination": "/products/indoor/cob-cyd/creta"
+  },
+  {
+    "source": "/product/20",
+    "destination": "/products/indoor/cob-premium-light/snow"
+  },
+  {
+    "source": "/product/21",
+    "destination": "/products/indoor/cob-premium-light/rio"
+  },
+  {
+    "source": "/product/23",
+    "destination": "/products/indoor/cob-cyd/vela"
+  },
+  {
+    "source": "/product/24",
+    "destination": "/products/indoor/cob-cyd/luna"
+  },
+  {
+    "source": "/product/25",
+    "destination": "/products/indoor/cob-light/vibe"
+  },
+  {
+    "source": "/product/26",
+    "destination": "/products/indoor/cob-light/sigma"
+  },
+  {
+    "source": "/product/28",
+    "destination": "/products/indoor/track-light/blaze"
+  },
+  {
+    "source": "/product/29",
+    "destination": "/products/indoor/linear-spot-light/magic"
+  },
+  {
+    "source": "/outdoor-product/1",
+    "destination": "/products/outdoor/flood-light/unik"
+  },
+  {
+    "source": "/outdoor-product/2",
+    "destination": "/products/outdoor/flood-light/star"
+  },
+  {
+    "source": "/outdoor-product/3",
+    "destination": "/products/outdoor/flood-light/optix"
+  },
+  {
+    "source": "/outdoor-product/4",
+    "destination": "/products/outdoor/flood-light/xylo"
+  },
+  {
+    "source": "/outdoor-product/5",
+    "destination": "/products/outdoor/flood-light/unik-back-choke"
+  },
+  {
+    "source": "/outdoor-product/6",
+    "destination": "/products/outdoor/street-light/galaxy"
+  },
+  {
+    "source": "/outdoor-product/7",
+    "destination": "/products/outdoor/street-light/lancy"
+  },
+  {
+    "source": "/outdoor-product/8",
+    "destination": "/products/outdoor/highbay-light/ufo"
+  },
+  {
+    "source": "/outdoor-product/9",
+    "destination": "/products/outdoor/highbay-light/ufo#glass"
+  },
+  {
+    "source": "/outdoor-product/10",
+    "destination": "/products/outdoor/flood-light/xylo"
+  },
+  {
+    "source": "/outdoor-product/11",
+    "destination": "/products/outdoor/stadium-light/stadium-light"
+  }
+]

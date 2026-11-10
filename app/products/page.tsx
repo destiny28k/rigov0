@@ -7,12 +7,14 @@ import { HighlightedText } from "@/components/highlighted-text"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { CategoryGrid } from "@/components/category-grid"
 import { catalog } from "@/lib/catalog"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "Products — RIGO Lighting",
+export const metadata: Metadata = pageMetadata({
+  title: "All Products",
   description:
     "Browse RIGO's indoor and outdoor LED lighting: panel lights, downlights, COB, cylinder, track and linear spot lights, flood, stadium, street and high-bay lights.",
-}
+  path: "/products",
+})
 
 export default function ProductsPage() {
   return (

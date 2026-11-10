@@ -1,12 +1,14 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { ContactList, LegalPage, LegalSection } from "@/components/legal-page"
+import { pageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "Terms of Use — RIGO Lighting",
+export const metadata: Metadata = pageMetadata({
+  title: "Terms of Use",
   description:
     "The terms that apply when you use the RIGO Lighting website, including product information, quotations, warranty and content use.",
-}
+  path: "/terms",
+})
 
 // Update this whenever the terms change.
 const LAST_UPDATED = "10 November 2026"
