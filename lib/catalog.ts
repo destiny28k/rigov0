@@ -30,10 +30,6 @@ type TabDef = {
   slug: ProductTab
   name: string
   description: string
-  /** Short line under the name in the Products dropdown */
-  tagline: string
-  /** Picture shown in the Products dropdown */
-  image: string
   categories: CategoryDef[]
 }
 
@@ -44,8 +40,6 @@ const TAXONOMY: TabDef[] = [
     slug: "indoor",
     name: "Indoor",
     description: "Panels, downlights, COB, cylinder, track and spot lighting for homes, offices, retail and hospitality.",
-    tagline: "Panels, downlights, COB, track & spot",
-    image: "/images/products/alpha.png",
     categories: [
       {
         slug: "panel-light",
@@ -163,8 +157,6 @@ const TAXONOMY: TabDef[] = [
     slug: "outdoor",
     name: "Outdoor",
     description: "Flood, stadium, street and high-bay lighting built for demanding environments.",
-    tagline: "Flood, stadium, street & high-bay",
-    image: "/images/outdoor/30WUNIK_nobg.png",
     categories: [
       {
         slug: "flood-light",
@@ -254,8 +246,6 @@ export type Tab = {
   slug: ProductTab
   name: string
   description: string
-  tagline: string
-  image: string
   href: string
   categories: Category[]
 }
@@ -273,8 +263,6 @@ function build(): Tab[] {
       slug: tabDef.slug,
       name: tabDef.name,
       description: tabDef.description,
-      tagline: tabDef.tagline,
-      image: tabDef.image,
       href: `/products/${tabDef.slug}`,
       categories: [],
     }
@@ -369,8 +357,8 @@ export function seriesSubtitle(series: Series) {
 }
 
 /** Lightweight menu structure for the header (safe to pass to client components). */
-export type MenuTab = { name: string; href: string; tagline: string; image: string }
+export type MenuTab = { name: string; href: string }
 
 export function getMenu(): MenuTab[] {
-  return catalog.map((tab) => ({ name: tab.name, href: tab.href, tagline: tab.tagline, image: tab.image }))
+  return catalog.map((tab) => ({ name: tab.name, href: tab.href }))
 }

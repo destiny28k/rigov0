@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ArrowRight, ChevronDown } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import type { MenuTab } from "@/lib/catalog"
@@ -121,45 +121,29 @@ export function Header({ menu }: { menu: MenuTab[] }) {
             <div
               id="products-menu"
               className={cn(
-                "absolute left-1/2 top-full -translate-x-1/2 pt-4 w-[25rem] transition-all duration-300",
+                "absolute left-1/2 top-full -translate-x-1/2 pt-6 w-44 transition-all duration-300",
                 megaOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2 pointer-events-none",
               )}
             >
-              <div className="bg-background text-foreground rounded-2xl shadow-2xl border border-border p-2">
-                <ul>
-                  {menu.map((tab) => {
-                    const active = pathname.startsWith(tab.href)
-                    return (
-                      <li key={tab.href}>
-                        <Link
-                          href={tab.href}
-                          aria-current={pathname === tab.href ? "page" : undefined}
-                          className={cn(
-                            "group flex items-center gap-4 rounded-xl p-3 transition-colors hover:bg-secondary",
-                            active && "bg-secondary",
-                          )}
-                        >
-                          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-white border border-border/60">
-                            <img src={encodeURI(tab.image)} alt="" className="h-14 w-14 object-contain" />
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="block font-medium text-base">{tab.name}</span>
-                            <span className="block text-sm text-muted-foreground">{tab.tagline}</span>
-                          </span>
-                          <ArrowRight className="w-4 h-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
-                        </Link>
-                      </li>
-                    )
-                  })}
-                </ul>
-                <Link
-                  href="/products"
-                  className="mt-1 flex items-center justify-between rounded-xl px-3 py-3 border-t border-border text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  View all products
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
+              <ul className="bg-primary rounded-xl border border-white/10 shadow-xl py-2 text-sm tracking-wide">
+                {[...menu, { name: "All Products", href: "/products" }].map((item, i) => {
+                  const active = item.href === "/products" ? pathname === "/products" : pathname.startsWith(item.href)
+                  return (
+                    <li key={item.href} className={cn(i === menu.length && "mt-2 pt-2 border-t border-white/10")}>
+                      <Link
+                        href={item.href}
+                        aria-current={pathname === item.href ? "page" : undefined}
+                        className={cn(
+                          "block px-5 py-2 transition-colors duration-300 hover:text-[rgb(251,146,60)]",
+                          active ? "text-[rgb(251,146,60)]" : "text-white/80",
+                        )}
+                      >
+                        {item.name}
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
             </div>
           </li>
           <li>
@@ -260,31 +244,24 @@ export function Header({ menu }: { menu: MenuTab[] }) {
               </button>
 
               {mobileProductsOpen && (
-                <ul className="mt-5 space-y-4 border-l border-white/15 pl-5">
-                  {menu.map((tab) => (
-                    <li key={tab.href}>
-                      <Link href={tab.href} onClick={closeMobileMenu} className="block">
-                        <span
+                <ul className="mt-5 space-y-3 border-l border-white/15 pl-5">
+                  {[...menu, { name: "All Products", href: "/products" }].map((item) => {
+                    const active = item.href === "/products" ? pathname === "/products" : pathname.startsWith(item.href)
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          onClick={closeMobileMenu}
                           className={cn(
-                            "block text-2xl font-light",
-                            pathname.startsWith(tab.href) ? "text-[rgb(251,146,60)]" : "text-white",
+                            "block text-2xl font-light transition-colors hover:text-[rgb(251,146,60)]",
+                            active ? "text-[rgb(251,146,60)]" : "text-white/80",
                           )}
                         >
-                          {tab.name}
-                        </span>
-                        <span className="block text-sm text-white/50">{tab.tagline}</span>
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link
-                      href="/products"
-                      onClick={closeMobileMenu}
-                      className="inline-flex items-center gap-2 text-sm text-white/80"
-                    >
-                      View all products <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </li>
+                          {item.name}
+                        </Link>
+                      </li>
+                    )
+                  })}
                 </ul>
               )}
             </li>
