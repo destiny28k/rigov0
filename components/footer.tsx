@@ -22,22 +22,22 @@ export function Footer() {
             <h4 className="text-sm font-medium mb-4">Explore</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
-                <Link href="#projects" className="hover:text-foreground transition-colors">
+                <Link href="/products" className="hover:text-foreground transition-colors">
                   Products
                 </Link>
               </li>
               <li>
-                <Link href="#about" className="hover:text-foreground transition-colors">
+                <Link href="/#about" className="hover:text-foreground transition-colors">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="#services" className="hover:text-foreground transition-colors">
+                <Link href="/#services" className="hover:text-foreground transition-colors">
                   Our Range
                 </Link>
               </li>
               <li>
-                <Link href="#contact" className="hover:text-foreground transition-colors">
+                <Link href="/#contact" className="hover:text-foreground transition-colors">
                   Contact
                 </Link>
               </li>

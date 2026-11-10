@@ -1,15 +1,16 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
 const projects = [
-  { id: 1, title: "Alpha Series", category: "Delta COB", detail: "Recessed COB downlight", image: "/images/products/alpha.png" },
-  { id: 2, title: "Fusion Series", category: "Curve COB", detail: "Sculpted curved COB light", image: "/images/products/fusion.png" },
-  { id: 3, title: "Foria Pro Series", category: "COB Light", detail: "Professional-grade COB", image: "/images/products/foria-pro.png" },
-  { id: 4, title: "Luna Series", category: "Cylinder COB", detail: "Movable COB cylinder light", image: "/images/products/luna.png" },
-  { id: 5, title: "Platina Series", category: "Panel Light", detail: "16W / 24W / 32W downlight panel", image: "/images/products/platina.png" },
-  { id: 6, title: "Rainbow Series", category: "Panel Light", detail: "Dual-colour concealed panel", image: "/images/products/rainbow.png" },
+  { id: 1, title: "Alpha Series", slug: "alpha-series-delta-cob", category: "Delta COB", detail: "Recessed COB downlight", image: "/images/products/alpha.png" },
+  { id: 2, title: "Fusion Series", slug: "fusion-series-curve-cob", category: "Curve COB", detail: "Sculpted curved COB light", image: "/images/products/fusion.png" },
+  { id: 3, title: "Foria Pro Series", slug: "foria-pro-series", category: "COB Light", detail: "Professional-grade COB", image: "/images/products/foria-pro.png" },
+  { id: 4, title: "Luna Series", slug: "luna-series-movable-cob-cylinder-light", category: "Cylinder COB", detail: "Movable COB cylinder light", image: "/images/products/luna.png" },
+  { id: 5, title: "Platina Series", slug: "platina-series-down-light-panel", category: "Panel Light", detail: "16W / 24W / 32W downlight panel", image: "/images/products/platina.png" },
+  { id: 6, title: "Rainbow Series", slug: "rainbow-series-conseal-panel", category: "Panel Light", detail: "Dual-colour concealed panel", image: "/images/products/rainbow.png" },
 ]
 
 export function Projects() {
@@ -47,20 +48,21 @@ export function Projects() {
             <p className="text-muted-foreground text-sm tracking-[0.3em] uppercase mb-6">Our Collection</p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight">Featured Products</h2>
           </div>
-          <a
-            href="#"
+          <Link
+            href="/products"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
           >
             View all products
             <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
+          </Link>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {projects.map((project, index) => (
-            <article
+            <Link
+              href={`/products/${project.slug}`}
               key={project.id}
-              className="group cursor-pointer"
+              className="group block"
               onMouseEnter={() => setHoveredId(project.id)}
               onMouseLeave={() => setHoveredId(null)}
             >
@@ -90,7 +92,7 @@ export function Projects() {
                 </div>
                 <span className="text-muted-foreground/60 text-sm whitespace-nowrap">{project.category}</span>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </div>
