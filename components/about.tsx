@@ -84,10 +84,8 @@ function useReveal(threshold = 0.2) {
   return { visible, refs }
 }
 
+/** About intro + stats. */
 export function About() {
-  const values$ = useReveal()
-  const journey$ = useReveal()
-
   return (
     <section id="about" className="py-32 md:py-29">
       <div className="container mx-auto px-6 md:px-12">
@@ -120,7 +118,7 @@ export function About() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-border border border-border rounded-2xl overflow-hidden mb-32">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-border border border-border rounded-2xl overflow-hidden">
           {stats.map((stat) => (
             <div key={stat.label} className="bg-background p-8 md:p-10 text-center">
               <p className="text-4xl md:text-5xl font-medium tracking-tight mb-2">{stat.number}</p>
@@ -128,7 +126,19 @@ export function About() {
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  )
+}
 
+/** "What we stand for" + "Our journey" (shown after Featured Products on the homepage). */
+export function AboutValues() {
+  const values$ = useReveal()
+  const journey$ = useReveal()
+
+  return (
+    <section id="values" className="py-32 md:py-29">
+      <div className="container mx-auto px-6 md:px-12">
         {/* Values + Journey */}
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
           <div>

@@ -1,6 +1,6 @@
 import { SiteHeader } from "@/components/site-header"
 import { Hero } from "@/components/hero"
-import { About } from "@/components/about"
+import { About, AboutValues } from "@/components/about"
 import { Philosophy } from "@/components/philosophy"
 import { Projects, type FeaturedItem } from "@/components/projects"
 import { getSeries } from "@/lib/catalog"
@@ -33,6 +33,7 @@ export default function Home() {
       <Hero />
       <About />
       <Projects items={featured} />
+      <AboutValues />
       <Philosophy />
       <Expertise />
       <FAQ />
