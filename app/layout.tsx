@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import localFont from "next/font/local"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
+import { SITE_URL } from "@/lib/site"
 
 // Satoshi by Indian Type Foundry (Fontshare), self-hosted under the ITF Free Font License.
 // One variable file covers every weight from Light (300) to Black (900).
@@ -15,6 +16,7 @@ const satoshi = localFont({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "RIGO Lighting — Premium LED Lighting Solutions",
   description:
     "Premium LED panel lights, COB downlights, cylinder and track lights from RIGO. Energy-efficient lighting that elevates every space.",
