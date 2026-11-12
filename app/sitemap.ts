@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next"
-import { catalog } from "@/lib/catalog"
+import { getCatalog } from "@/lib/catalog"
 import { SITE_URL } from "@/lib/site"
 
 /** /sitemap.xml — every page, built from the product catalogue so new series are included automatically. */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const catalog = await getCatalog()
   const lastModified = new Date()
   const url = (path: string) => `${SITE_URL}${path}`
 

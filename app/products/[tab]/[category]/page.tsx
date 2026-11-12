@@ -5,22 +5,20 @@ import { SiteHeader } from "@/components/site-header"
 import { Footer } from "@/components/footer"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { ProductCard } from "@/components/product-card"
-import { catalog, getCategory, seriesSubtitle } from "@/lib/catalog"
+import { getCatalog, getCategory, seriesSubtitle } from "@/lib/catalog"
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo"
 import { JsonLd } from "@/components/json-ld"
 import { cn } from "@/lib/utils"
 
 type Params = { tab: string; category: string }
 
-export const dynamicParams = false
-
-export function generateStaticParams(): Params[] {
-  return catalog.flatMap((t) => t.categories.map((c) => ({ tab: t.slug, category: c.slug })))
+export async function generateStaticParams(): Promise<Params[]> {
+  return (await getCatalog()).flatMap((t) => t.categories.map((c) => ({ tab: t.slug, category: c.slug })))
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { tab, category: slug } = await params
-  const category = getCategory(tab, slug)
+  const category = await getCategory(tab, slug)
   if (!category) return {}
   return pageMetadata({
     title: `${category.name} — ${category.tab.name} LED Lighting`,
@@ -32,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function CategoryPage({ params }: { params: Promise<Params> }) {
   const { tab: tabSlug, category: slug } = await params
-  const category = getCategory(tabSlug, slug)
+  const category = await getCategory(tabSlug, slug)
   if (!category) notFound()
   const { tab } = category
 

@@ -2,10 +2,8 @@ import type React from "react"
 import { SiteHeader } from "./site-header"
 import { Footer } from "./footer"
 import { Breadcrumbs } from "./breadcrumbs"
+import { getSiteSettings } from "@/lib/content"
 
-export const CONTACT_EMAILS = ["customercarerigo1@gmail.com", "jailaxmilightingsolutions@gmail.com"]
-export const WHATSAPP_URL = "https://wa.me/918369051700"
-export const WHATSAPP_DISPLAY = "+91 83690 51700"
 
 /** Shared layout for Privacy Policy, Terms of Use and similar text pages. */
 export function LegalPage({
@@ -56,18 +54,19 @@ export function LegalSection({ title, children }: { title: string; children: Rea
   )
 }
 
-export function ContactList() {
+export async function ContactList() {
+  const settings = await getSiteSettings()
   return (
     <ul>
-      {CONTACT_EMAILS.map((email) => (
+      {settings.emails.map((email) => (
         <li key={email}>
           <a href={`mailto:${email}`}>{email}</a>
         </li>
       ))}
       <li>
         WhatsApp / phone:{" "}
-        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
-          {WHATSAPP_DISPLAY}
+        <a href={settings.whatsappUrl} target="_blank" rel="noopener noreferrer">
+          {settings.phone}
         </a>
       </li>
     </ul>

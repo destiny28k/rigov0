@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
-import { CONTACT, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "./site"
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "./site"
+import type { SiteSettings } from "./content"
 
 export const DEFAULT_OG_IMAGE = { url: "/og-image.jpg", width: 1200, height: 630, alt: `${SITE_NAME} — premium LED lighting` }
 
@@ -46,7 +47,7 @@ export function pageMetadata({
 const abs = (path: string) => `${SITE_URL}${encodeURI(path)}`
 
 /** schema.org Organization + WebSite, for the homepage. */
-export function organizationJsonLd() {
+export function organizationJsonLd(settings: SiteSettings) {
   return [
     {
       "@context": "https://schema.org",
@@ -55,13 +56,13 @@ export function organizationJsonLd() {
       url: SITE_URL,
       logo: abs("/images/rigo-logo.png"),
       description: SITE_DESCRIPTION,
-      sameAs: [CONTACT.instagram],
+      sameAs: [settings.instagramUrl].filter(Boolean),
       contactPoint: [
         {
           "@type": "ContactPoint",
           contactType: "customer service",
-          telephone: CONTACT.phone,
-          email: CONTACT.emails[0],
+          telephone: `+${settings.whatsappNumber}`,
+          email: settings.emails[0],
           areaServed: "IN",
           availableLanguage: ["English", "Hindi"],
         },

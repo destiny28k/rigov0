@@ -1,10 +1,11 @@
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight } from "lucide-react"
-import { catalog } from "@/lib/catalog"
+import { getCatalog } from "@/lib/catalog"
 import { imageSrc } from "@/lib/products"
 
 /** Homepage "Shop by category": every category from the catalogue, grouped by Indoor / Outdoor. */
-export function ShopByCategory() {
+export async function ShopByCategory() {
+  const catalog = await getCatalog()
   return (
     <section id="range" className="py-32 md:py-29">
       <div className="container mx-auto px-6 md:px-12">

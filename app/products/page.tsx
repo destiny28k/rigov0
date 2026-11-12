@@ -6,7 +6,7 @@ import { Footer } from "@/components/footer"
 import { HighlightedText } from "@/components/highlighted-text"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { CategoryGrid } from "@/components/category-grid"
-import { catalog } from "@/lib/catalog"
+import { getCatalog } from "@/lib/catalog"
 import { pageMetadata } from "@/lib/seo"
 
 export const metadata: Metadata = pageMetadata({
@@ -16,7 +16,8 @@ export const metadata: Metadata = pageMetadata({
   path: "/products",
 })
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const catalog = await getCatalog()
   return (
     <main className="min-h-screen">
       <SiteHeader />

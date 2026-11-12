@@ -10,8 +10,6 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 import type { MenuTab } from "@/lib/catalog"
 
-const WECHAT_URL = "https://u.wechat.com/kP_PkMqInEFhHvN6A0ipJ-A?s=4"
-const INSTAGRAM_URL = "https://instagram.com/rigolighting"
 
 /** Small spaced capitals, soft white that brightens on hover; the current page gets a small dot underneath. */
 function navLinkClass(active: boolean, open = false) {
@@ -22,7 +20,15 @@ function navLinkClass(active: boolean, open = false) {
   )
 }
 
-export function Header({ menu }: { menu: MenuTab[] }) {
+export function Header({
+  menu,
+  wechatUrl,
+  instagramUrl,
+}: {
+  menu: MenuTab[]
+  wechatUrl: string
+  instagramUrl: string
+}) {
   const pathname = usePathname()
   const isHome = pathname === "/"
   const productsActive = pathname.startsWith("/products")
@@ -144,7 +150,7 @@ export function Header({ menu }: { menu: MenuTab[] }) {
 
         <div className="flex items-center gap-3 justify-self-end">
           <a
-            href={WECHAT_URL}
+            href={wechatUrl}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Connect with RIGO on WeChat"
@@ -155,7 +161,7 @@ export function Header({ menu }: { menu: MenuTab[] }) {
           </a>
 
           <a
-            href={INSTAGRAM_URL}
+            href={instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow RIGO on Instagram"

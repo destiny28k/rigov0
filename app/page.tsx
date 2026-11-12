@@ -6,7 +6,8 @@ import { Hero } from "@/components/hero"
 import { About } from "@/components/about"
 import { Philosophy } from "@/components/philosophy"
 import { Projects, type FeaturedItem } from "@/components/projects"
-import { getSeries } from "@/lib/catalog"
+import { allSeries } from "@/lib/catalog"
+import { getHomePage, getSiteSettings } from "@/lib/content"
 import { ShopByCategory } from "@/components/shop-by-category"
 import { FAQ } from "@/components/faq"
 import { CallToAction } from "@/components/call-to-action"
@@ -19,36 +20,46 @@ export const metadata = pageMetadata({
   absoluteTitle: true,
 })
 
-// Hand-picked for the homepage; links and categories come from the catalogue so they stay in sync.
-const FEATURED = [
-  { path: ["indoor", "cob-light", "alpha"], detail: "Recessed COB downlight", image: "/images/products/alpha.png" },
-  { path: ["indoor", "cob-light", "fusion"], detail: "Sculpted curved COB light", image: "/images/products/fusion.png" },
-  { path: ["indoor", "cob-premium-light", "foria-pro"], detail: "Professional-grade COB", image: "/images/products/foria-pro.png" },
-  { path: ["indoor", "cob-cyd", "luna"], detail: "Movable COB cylinder light", image: "/images/products/luna.png" },
-  { path: ["indoor", "downlight", "platina"], detail: "16W / 24W / 32W downlight", image: "/images/products/platina.png" },
-  { path: ["indoor", "panel-light", "rainbow"], detail: "Dual-colour LED panel", image: "/images/products/rainbow.png" },
-] as const
+export default async function Home() {
+  const [home, settings, series] = await Promise.all([getHomePage(), getSiteSettings(), allSeries()])
 
-const featured: FeaturedItem[] = FEATURED.map(({ path, detail, image }) => {
-  const [tab, category, slug] = path
-  const series = getSeries(tab, category, slug)
-  if (!series) throw new Error(`Featured product not found in catalogue: ${path.join("/")}`)
-  return { href: series.href, title: series.title, detail, category: series.category.name, image }
-})
+  // Featured products are chosen in the admin (Homepage → Featured products); hidden ones are skipped
+  const featured: FeaturedItem[] = home.featured.flatMap(({ seriesId, detail }) => {
+    const s = series.find((item) => item.id === seriesId)
+    if (!s) return []
+    return [
+      {
+        href: s.href,
+        title: s.title,
+        detail: detail || seriesSubtitleOf(s),
+        category: s.category.name,
+        image: s.image,
+      },
+    ]
+  })
 
-export default function Home() {
   return (
     <main className="min-h-screen">
-      <JsonLd data={organizationJsonLd()} />
+      <JsonLd data={organizationJsonLd(settings)} />
       <SiteHeader />
       <Hero />
       <ShopByCategory />
-      <Projects items={featured} />
-      <Philosophy />
-      <About />
-      <FAQ />
-      <CallToAction />
+      {featured.length > 0 && <Projects items={featured} />}
+      <Philosophy heading={home.whyHeading} intro={home.whyIntro} reasons={home.reasons} stats={home.stats} />
+      <About
+        heading={home.aboutHeading}
+        text={home.aboutText}
+        image={home.aboutImage}
+        values={home.values}
+        journey={home.journey}
+      />
+      {home.faq.length > 0 && <FAQ items={home.faq} />}
+      <CallToAction settings={settings} />
       <Footer />
     </main>
   )
+}
+
+function seriesSubtitleOf(s: Awaited<ReturnType<typeof allSeries>>[number]) {
+  return s.versions[0]?.subtitle ?? ""
 }

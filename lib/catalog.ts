@@ -1,226 +1,41 @@
 /**
- * Product hierarchy from "Website FrameWork.pdf":
+ * Product catalogue, read from Sanity (edited at /studio):
  *   Products → Indoor / Outdoor → Category → Series → (Versions)
  *
- * The order of tabs, categories and series here is the order shown on the site.
- * Each series lists the product entries (from data/*.json, by slug) that belong to it.
- * A series with several entries (e.g. Deco Concealed + Deco Surface) gets one page with a version switch.
- * A series with no entries yet stays hidden until its product data is added.
+ * Order comes from the "Order" fields in the admin. Hidden series, and categories with no visible series,
+ * are left out. Results are cached (see sanity/lib/client.ts) and de-duplicated per request with React cache().
  */
-import { products, type Product, type ProductTab } from "./products"
+import { cache } from "react"
+import { sanityFetch } from "@/sanity/lib/client"
+import { imageUrl, type SanityImage } from "@/sanity/lib/image"
 
-type SeriesDef = {
-  slug: string
-  name: string
-  /** Defaults to "<name> Series" */
-  title?: string
-  versions: { product: string; label?: string }[]
-}
+export type ProductTab = "indoor" | "outdoor"
+export type SpecRow = { label: string; value: string }
 
-type CategoryDef = {
-  slug: string
-  name: string
+export type Version = {
+  key: string
+  /** e.g. "Concealed" — empty when the series has a single version */
+  label: string
+  anchor: string
+  /** e.g. "Delta COB" */
+  subtitle: string
   description: string
-  /** Tile picture; defaults to the first series' image */
-  image?: string
-  series: SeriesDef[]
+  /** Card picture URL */
+  image: string
+  /** Gallery photo URLs and matching thumbnail URLs */
+  images: string[]
+  thumbs: string[]
+  features: string[]
+  /** Key specs shown at the top of the product page */
+  summary: SpecRow[]
+  /** Spec names in display order, shared by all models */
+  variantFields: string[]
+  /** One entry per model; values are keyed by spec name */
+  variants: { model: string; values: Record<string, string> }[]
 }
-
-type TabDef = {
-  slug: ProductTab
-  name: string
-  description: string
-  categories: CategoryDef[]
-}
-
-const one = (product: string) => [{ product }]
-
-const TAXONOMY: TabDef[] = [
-  {
-    slug: "indoor",
-    name: "Indoor",
-    description: "Panels, downlights, COB, cylinder, track and spot lighting for homes, offices, retail and hospitality.",
-    categories: [
-      {
-        slug: "panel-light",
-        name: "Panel Light",
-        description: "Slim LED panels in concealed and surface-mount styles for clean, even everyday lighting.",
-        image: "/images/products/rainbow.png",
-        series: [
-          {
-            slug: "deco",
-            name: "Deco",
-            versions: [
-              { product: "deco-series-concealed-panel", label: "Concealed" },
-              { product: "deco-series-surface-panel", label: "Surface" },
-            ],
-          },
-          {
-            slug: "glow",
-            name: "Glow",
-            versions: [
-              { product: "glow-series-conseal-panel", label: "Concealed" },
-              { product: "glow-series-surface-panel", label: "Surface" },
-            ],
-          },
-          {
-            slug: "rainbow",
-            name: "Rainbow",
-            versions: [
-              { product: "rainbow-series-conseal-panel", label: "Concealed" },
-              { product: "rainbow-series-surface-panel", label: "Surface" },
-            ],
-          },
-          // Not in the framework PDF — kept here (nearest category) until the client confirms.
-          { slug: "neo", name: "Neo", versions: one("neo-series-pvc-down-light-panel") },
-        ],
-      },
-      {
-        slug: "downlight",
-        name: "DownLight",
-        description: "Recessed LED downlights for a neat, uniform wash of light across living spaces, offices and corridors.",
-        series: [
-          { slug: "platina", name: "Platina", versions: one("platina-series-down-light-panel") },
-          { slug: "olive", name: "Olive", versions: one("olive-series-deep-down-light") },
-        ],
-      },
-      {
-        slug: "deep-downlight",
-        name: "Deep DownLight",
-        description: "Deep-set downlights that sink the light source into the ceiling for softer, low-glare illumination.",
-        series: [
-          { slug: "prima", name: "Prima", versions: one("prima-down-light-panel") },
-          { slug: "bella", name: "Bella", versions: [] },
-        ],
-      },
-      {
-        slug: "cob-light",
-        name: "COB Light",
-        description: "Focused COB downlights with precision reflectors for crisp accent and ambient lighting.",
-        series: [
-          { slug: "alpha", name: "Alpha", versions: one("alpha-series-delta-cob") },
-          { slug: "ador", name: "Ador", versions: one("adore-series-delta-cob") },
-          { slug: "fusion", name: "Fusion", versions: one("fusion-series-curve-cob") },
-          { slug: "nexus", name: "Nexus", versions: one("nexus-series-lens-cob") },
-          { slug: "sigma", name: "Sigma", versions: one("sigma-series-movable-cob-light") },
-          { slug: "vibe", name: "Vibe", versions: one("vibe-series-cob-deep-spot") },
-        ],
-      },
-      {
-        slug: "cob-premium-light",
-        name: "COB Premium Light",
-        description: "Our premium COB range with refined finishes and optics for high-end homes, retail and hospitality.",
-        series: [
-          { slug: "della", name: "Della", versions: one("della-series") },
-          { slug: "foria", name: "Foria", versions: one("foria-series") },
-          { slug: "foria-pro", name: "Foria Pro", versions: one("foria-pro-series") },
-          { slug: "rio", name: "Rio", versions: one("rio-series") },
-          { slug: "spark", name: "Spark", versions: one("spark-series") },
-          { slug: "rolex", name: "Rolex", versions: [] },
-          { slug: "snow", name: "Snow", versions: one("snow-series") },
-          { slug: "grace", name: "Grace", versions: [] },
-          { slug: "seltos", name: "Seltos", versions: [] },
-        ],
-      },
-      {
-        slug: "cob-cyd",
-        name: "COB CYD",
-        description: "Surface-mounted COB cylinder lights for high ceilings, accent walls and modern interiors.",
-        series: [
-          { slug: "vela", name: "Vela", versions: one("vela-series-cob-cylinder-light") },
-          { slug: "luna", name: "Luna", versions: one("luna-series-movable-cob-cylinder-light") },
-          // Not in the framework PDF — kept here (nearest category) until the client confirms.
-          { slug: "creta", name: "Creta", versions: one("creta-series") },
-        ],
-      },
-      {
-        slug: "track-light",
-        name: "Track Light",
-        description: "Adjustable track-mounted spotlights to highlight artwork, displays and architectural details.",
-        series: [
-          { slug: "blaze", name: "Blaze", versions: one("blaze-track-light") },
-          { slug: "magnite", name: "Magnite", versions: [] },
-        ],
-      },
-      {
-        slug: "linear-spot-light",
-        name: "Linear Spot Light",
-        description: "Linear SMD spot lights for slim, directional accent lighting.",
-        series: [
-          { slug: "nexa", name: "Nexa", versions: [] },
-          { slug: "magic", name: "Magic", versions: one("magic-series-liner-smd-spot-light") },
-        ],
-      },
-    ],
-  },
-  {
-    slug: "outdoor",
-    name: "Outdoor",
-    description: "Flood, stadium, street and high-bay lighting built for demanding environments.",
-    categories: [
-      {
-        slug: "flood-light",
-        name: "Flood Light",
-        description: "Weather-resistant LED flood lights for facades, yards, signage and security lighting.",
-        series: [
-          { slug: "unik", name: "Unik", versions: one("unik-series-slim-led-flood-light") },
-          { slug: "star", name: "Star", versions: one("star-series-slim-led-flood-light") },
-          { slug: "optix", name: "Optix", versions: one("optix-series-lens-led-flood-light") },
-          {
-            slug: "unik-back-choke",
-            name: "Unik Back Choke",
-            title: "Unik Back Choke",
-            versions: one("back-choke-led-flood-light"),
-          },
-          { slug: "dob-flood", name: "DOB Flood", title: "DOB Flood Light", versions: [] },
-          // Not in the framework PDF — kept here (nearest category) until the client confirms.
-          { slug: "xylo", name: "Xylo", versions: one("xylo-series-gm-model-led-flood-light") },
-        ],
-      },
-      {
-        slug: "stadium-light",
-        name: "Stadium Light",
-        description: "High-output flood lighting for stadiums, sports grounds and large open areas.",
-        series: [
-          { slug: "stadium-light", name: "Stadium Light", title: "Stadium Light", versions: one("staduim-led-flood-light") },
-        ],
-      },
-      {
-        slug: "street-light",
-        name: "Street Light",
-        description: "Durable LED street lights for roads, campuses, parking areas and pathways.",
-        series: [
-          { slug: "galaxy", name: "Galaxy", versions: one("galaxy-series-led-street-light") },
-          { slug: "lancy", name: "Lancy", versions: one("lency-series-led-street-light") },
-          { slug: "dob-street", name: "DOB Street", title: "DOB Street Light", versions: [] },
-        ],
-      },
-      {
-        slug: "highbay-light",
-        name: "HighBay Light",
-        description: "High-bay LED lighting for warehouses, factories and other high-ceiling spaces.",
-        series: [
-          {
-            slug: "ufo",
-            name: "UFO Series",
-            title: "UFO Series",
-            versions: [
-              { product: "ufo-series-lense-high-bay-led-light", label: "Lens" },
-              { product: "ufo-series-glass-high-bay-led-light", label: "Glass" },
-            ],
-          },
-          { slug: "ufo-eco", name: "UFO Eco Series", title: "UFO Eco Series", versions: [] },
-        ],
-      },
-    ],
-  },
-]
-
-/* ------------------------------------------------------------------ */
-
-export type Version = Product & { label: string; anchor: string }
 
 export type Series = {
+  id: string
   slug: string
   name: string
   title: string
@@ -232,13 +47,13 @@ export type Series = {
 }
 
 export type Category = {
+  id: string
   slug: string
   name: string
   description: string
   href: string
   image: string
   tab: Tab
-  /** Only series that have product data */
   series: Series[]
 }
 
@@ -250,115 +65,177 @@ export type Tab = {
   categories: Category[]
 }
 
-function anchorFor(label: string) {
-  return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+const TABS: { slug: ProductTab; name: string; description: string }[] = [
+  {
+    slug: "indoor",
+    name: "Indoor",
+    description: "Panels, downlights, COB, cylinder, track and spot lighting for homes, offices, retail and hospitality.",
+  },
+  {
+    slug: "outdoor",
+    name: "Outdoor",
+    description: "Flood, stadium, street and high-bay lighting built for demanding environments.",
+  },
+]
+
+// ---------------------------------------------------------------- Sanity query
+
+type RawSpec = { label?: string; value?: string }
+type RawVersion = {
+  _key: string
+  label?: string
+  subtitle?: string
+  description?: string
+  cardImage?: SanityImage
+  images?: SanityImage[]
+  features?: string[]
+  highlights?: RawSpec[]
+  models?: { modelNo?: string; specs?: RawSpec[] }[]
+}
+type RawCategory = { _id: string; name: string; tab: ProductTab; slug: string; description?: string; image?: SanityImage }
+type RawSeries = { _id: string; name: string; title?: string; slug: string; categoryId: string; versions?: RawVersion[] }
+
+const CATALOG_QUERY = `{
+  "categories": *[_type == "category" && defined(slug.current) && tab in ["indoor", "outdoor"]]
+    | order(order asc, name asc) { _id, name, tab, description, image, "slug": slug.current },
+  "series": *[_type == "series" && hidden != true && defined(slug.current) && defined(category._ref)]
+    | order(order asc, name asc) {
+      _id, name, title, "slug": slug.current, "categoryId": category._ref,
+      versions[] { _key, label, subtitle, description, cardImage, images, features,
+        highlights[] { label, value }, models[] { modelNo, specs[] { label, value } } }
+    }
+}`
+
+// ---------------------------------------------------------------- build
+
+const anchorFor = (label: string) =>
+  label
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+
+const cleanRows = (rows: RawSpec[] = []): SpecRow[] =>
+  rows
+    .map((r) => ({ label: (r.label ?? "").trim(), value: (r.value ?? "").trim() }))
+    .filter((r) => r.label && r.value)
+
+function buildVersion(raw: RawVersion): Version | null {
+  const photos = (raw.images ?? []).filter((img) => img?.asset)
+  const card = raw.cardImage?.asset ? raw.cardImage : photos[0]
+  if (!card) return null
+
+  // Spec names are matched case-insensitively so "Power" and "power" share one table row
+  const fieldByKey = new Map<string, string>()
+  const variants = (raw.models ?? []).map((model, i) => {
+    const values: Record<string, string> = {}
+    for (const row of cleanRows(model.specs)) {
+      const key = row.label.toLowerCase()
+      if (!fieldByKey.has(key)) fieldByKey.set(key, row.label)
+      values[fieldByKey.get(key)!] = row.value
+    }
+    return { model: (model.modelNo ?? "").trim() || `Model ${i + 1}`, values }
+  })
+
+  const label = (raw.label ?? "").trim()
+  return {
+    key: raw._key,
+    label,
+    anchor: anchorFor(label),
+    subtitle: (raw.subtitle ?? "").trim(),
+    description: (raw.description ?? "").trim(),
+    image: imageUrl(card, 800),
+    images: photos.length ? photos.map((img) => imageUrl(img, 1600)) : [imageUrl(card, 1600)],
+    thumbs: photos.length ? photos.map((img) => imageUrl(img, 200)) : [imageUrl(card, 200)],
+    features: (raw.features ?? []).map((f) => f.trim()).filter(Boolean),
+    summary: cleanRows(raw.highlights),
+    variantFields: [...fieldByKey.values()],
+    variants,
+  }
 }
 
-function build(): Tab[] {
-  const used = new Set<string>()
-  const problems: string[] = []
+async function loadCatalog(): Promise<Tab[]> {
+  const data = await sanityFetch<{ categories: RawCategory[]; series: RawSeries[] }>(CATALOG_QUERY)
 
-  const tabs = TAXONOMY.map((tabDef) => {
-    const tab: Tab = {
-      slug: tabDef.slug,
-      name: tabDef.name,
-      description: tabDef.description,
-      href: `/products/${tabDef.slug}`,
-      categories: [],
-    }
+  return TABS.map((tabDef) => {
+    const tab: Tab = { ...tabDef, href: `/products/${tabDef.slug}`, categories: [] }
 
-    tab.categories = tabDef.categories
-      .map((catDef) => {
+    tab.categories = data.categories
+      .filter((c) => c.tab === tab.slug)
+      .map((raw) => {
         const category: Category = {
-          slug: catDef.slug,
-          name: catDef.name,
-          description: catDef.description,
-          href: `${tab.href}/${catDef.slug}`,
+          id: raw._id,
+          slug: raw.slug,
+          name: raw.name,
+          description: raw.description ?? "",
+          href: `${tab.href}/${raw.slug}`,
           image: "",
           tab,
           series: [],
         }
-
-        category.series = catDef.series
-          .map((seriesDef) => {
-            const versions: Version[] = seriesDef.versions.flatMap(({ product: slug, label }) => {
-              const product = products.find((p) => p.slug === slug)
-              if (!product) {
-                problems.push(`Series "${seriesDef.name}" points to missing product "${slug}"`)
-                return []
-              }
-              if (used.has(slug)) problems.push(`Product "${slug}" is assigned to more than one series`)
-              used.add(slug)
-              const versionLabel = label ?? ""
-              return [{ ...product, label: versionLabel, anchor: anchorFor(versionLabel) }]
-            })
-
+        category.series = data.series
+          .filter((s) => s.categoryId === raw._id)
+          .map((s) => {
+            const versions = (s.versions ?? []).map(buildVersion).filter((v): v is Version => v !== null)
             return {
-              slug: seriesDef.slug,
-              name: seriesDef.name,
-              title: seriesDef.title ?? `${seriesDef.name} Series`,
-              href: `${category.href}/${seriesDef.slug}`,
+              id: s._id,
+              slug: s.slug,
+              name: s.name,
+              title: s.title?.trim() || `${s.name} Series`,
+              href: `${category.href}/${s.slug}`,
               image: versions[0]?.image ?? "",
               tab,
               category,
               versions,
             } satisfies Series
           })
-          .filter((series) => series.versions.length > 0)
-
-        category.image = catDef.image ?? category.series[0]?.image ?? ""
+          .filter((s) => s.versions.length > 0)
+        category.image = raw.image?.asset ? imageUrl(raw.image, 800) : (category.series[0]?.image ?? "")
         return category
       })
-      .filter((category) => category.series.length > 0)
+      .filter((c) => c.series.length > 0)
 
     return tab
   })
-
-  for (const product of products) {
-    if (!used.has(product.slug)) problems.push(`Product "${product.slug}" is not assigned to any series in lib/catalog.ts`)
-  }
-  if (problems.length > 0) {
-    throw new Error(`Product catalogue is out of sync with the data files:\n- ${problems.join("\n- ")}`)
-  }
-
-  return tabs
 }
 
-export const catalog: Tab[] = build()
+// ---------------------------------------------------------------- public API
 
-export function getTab(tab: string) {
-  return catalog.find((t) => t.slug === tab)
+/** The whole catalogue (one Sanity request per page render). */
+export const getCatalog = cache(loadCatalog)
+
+export async function getTab(tab: string) {
+  return (await getCatalog()).find((t) => t.slug === tab)
 }
 
-export function getCategory(tab: string, category: string) {
-  return getTab(tab)?.categories.find((c) => c.slug === category)
+export async function getCategory(tab: string, category: string) {
+  return (await getTab(tab))?.categories.find((c) => c.slug === category)
 }
 
-export function getSeries(tab: string, category: string, series: string) {
-  return getCategory(tab, category)?.series.find((s) => s.slug === series)
+export async function getSeries(tab: string, category: string, series: string) {
+  return (await getCategory(tab, category))?.series.find((s) => s.slug === series)
 }
 
-export function allSeries(): Series[] {
-  return catalog.flatMap((t) => t.categories.flatMap((c) => c.series))
+export async function allSeries(): Promise<Series[]> {
+  return (await getCatalog()).flatMap((t) => t.categories.flatMap((c) => c.series))
 }
 
 /** Same category first, then the rest of the same tab. */
 export function getRelatedSeries(series: Series, limit = 4) {
   const sameTab = series.tab.categories.flatMap((c) => c.series).filter((s) => s.href !== series.href)
-  const sameCategory = sameTab.filter((s) => s.category.slug === series.category.slug)
-  const others = sameTab.filter((s) => s.category.slug !== series.category.slug)
+  const sameCategory = sameTab.filter((s) => s.category.id === series.category.id)
+  const others = sameTab.filter((s) => s.category.id !== series.category.id)
   return [...sameCategory, ...others].slice(0, limit)
 }
 
 /** A short line for cards: the version labels, or the single product's descriptor. */
 export function seriesSubtitle(series: Series) {
-  if (series.versions.length > 1) return series.versions.map((v) => v.label).join(" · ")
+  if (series.versions.length > 1) return series.versions.map((v) => v.label).filter(Boolean).join(" · ")
   return series.versions[0].subtitle
 }
 
 /** Lightweight menu structure for the header (safe to pass to client components). */
 export type MenuTab = { name: string; href: string }
 
-export function getMenu(): MenuTab[] {
-  return catalog.map((tab) => ({ name: tab.name, href: tab.href }))
+export async function getMenu(): Promise<MenuTab[]> {
+  return (await getCatalog()).map((tab) => ({ name: tab.name, href: tab.href }))
 }

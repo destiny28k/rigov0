@@ -3,7 +3,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { SiteHeader } from "@/components/site-header"
 import { Footer } from "@/components/footer"
-import { catalog } from "@/lib/catalog"
+import { getCatalog } from "@/lib/catalog"
 
 export const metadata: Metadata = {
   title: "Page not found",
@@ -11,7 +11,8 @@ export const metadata: Metadata = {
 }
 
 /** Branded 404: same dark band and warm light effect as Why RIGO / Get in Touch. */
-export default function NotFound() {
+export default async function NotFound() {
+  const catalog = await getCatalog()
   return (
     <main className="min-h-screen">
       <SiteHeader />

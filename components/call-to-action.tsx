@@ -1,8 +1,9 @@
 import { ArrowRight } from "lucide-react"
 import { SpotlightCard } from "./spotlight-card"
+import type { SiteSettings } from "@/lib/content"
 
 /** Get in Touch — dark band with the same light effects as Why RIGO. */
-export function CallToAction() {
+export function CallToAction({ settings }: { settings: SiteSettings }) {
   return (
     <section id="contact" className="relative overflow-hidden bg-foreground text-primary-foreground scroll-mt-24">
       {/* Light effect: a slim "fixture" line at the top casting a soft warm glow over the heading */}
@@ -35,7 +36,7 @@ export function CallToAction() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://wa.me/918369051700"
+                href={settings.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group/btn inline-flex items-center justify-center gap-3 bg-white text-foreground px-8 py-4 text-sm tracking-wide transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,238,210,0.45)]"
@@ -44,7 +45,7 @@ export function CallToAction() {
                 <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
               </a>
               <a
-                href="mailto:customercarerigo1@gmail.com"
+                href={`mailto:${settings.emails[0]}`}
                 className="inline-flex items-center justify-center gap-2 border border-white/25 px-8 py-4 text-sm tracking-wide transition-all duration-500 hover:border-white/60 hover:bg-white/[0.05] hover:shadow-[0_0_32px_rgba(255,238,210,0.2)]"
               >
                 Email us

@@ -7,28 +7,26 @@ import { Footer } from "@/components/footer"
 import { HighlightedText } from "@/components/highlighted-text"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import { CategoryGrid } from "@/components/category-grid"
-import { catalog, getTab } from "@/lib/catalog"
+import { getCatalog, getTab } from "@/lib/catalog"
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo"
 import { JsonLd } from "@/components/json-ld"
 
 type Params = { tab: string }
 
-export const dynamicParams = false
-
-export function generateStaticParams(): Params[] {
-  return catalog.map((t) => ({ tab: t.slug }))
+export async function generateStaticParams(): Promise<Params[]> {
+  return (await getCatalog()).map((t) => ({ tab: t.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
-  const tab = getTab((await params).tab)
+  const tab = await getTab((await params).tab)
   if (!tab) return {}
   return pageMetadata({ title: `${tab.name} LED Lighting`, description: tab.description, path: tab.href })
 }
 
 export default async function TabPage({ params }: { params: Promise<Params> }) {
-  const tab = getTab((await params).tab)
+  const tab = await getTab((await params).tab)
   if (!tab) notFound()
-  const other = catalog.find((t) => t.slug !== tab.slug)
+  const other = (await getCatalog()).find((t) => t.slug !== tab.slug)
 
   return (
     <main className="min-h-screen">

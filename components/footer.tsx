@@ -1,7 +1,9 @@
 import Link from "next/link"
 import Image from "next/image"
+import { getSiteSettings } from "@/lib/content"
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSiteSettings()
   return (
     <footer className="py-16 md:py-24 border-t border-border">
       <div className="container mx-auto px-6 md:px-12">
@@ -50,27 +52,24 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
                 <a
-                  href="https://wa.me/918369051700"
+                  href={settings.whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-foreground transition-colors"
                 >
-                  +91 83690 51700
+                  {settings.phone}
                 </a>
               </li>
-              <li>
-                <a href="mailto:customercarerigo1@gmail.com" className="hover:text-foreground transition-colors break-all">
-                  customercarerigo1@gmail.com
-                </a>
-              </li>
-              <li>
-                <a href="mailto:jailaxmilightingsolutions@gmail.com" className="hover:text-foreground transition-colors break-all">
-                  jailaxmilightingsolutions@gmail.com
-                </a>
-              </li>
+              {settings.emails.map((email) => (
+                <li key={email}>
+                  <a href={`mailto:${email}`} className="hover:text-foreground transition-colors break-all">
+                    {email}
+                  </a>
+                </li>
+              ))}
               <li>
                 <a
-                  href="https://instagram.com/rigolighting"
+                  href={settings.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-foreground transition-colors"

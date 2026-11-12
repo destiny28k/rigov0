@@ -9,21 +9,19 @@ import { ProductCard } from "@/components/product-card"
 import { ProductGallery } from "@/components/product-gallery"
 import { VersionPanel, VersionProvider, VersionSwitch } from "@/components/version-switch"
 import { allSeries, getRelatedSeries, getSeries, seriesSubtitle, type Version } from "@/lib/catalog"
-import { fieldLabel } from "@/lib/products"
+import { getSiteSettings, type SiteSettings } from "@/lib/content"
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo"
 import { JsonLd } from "@/components/json-ld"
 
 type Params = { tab: string; category: string; series: string }
 
-export const dynamicParams = false
-
-export function generateStaticParams(): Params[] {
-  return allSeries().map((s) => ({ tab: s.tab.slug, category: s.category.slug, series: s.slug }))
+export async function generateStaticParams(): Promise<Params[]> {
+  return (await allSeries()).map((s) => ({ tab: s.tab.slug, category: s.category.slug, series: s.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { tab, category, series: slug } = await params
-  const series = getSeries(tab, category, slug)
+  const series = await getSeries(tab, category, slug)
   if (!series) return {}
   const first = series.versions[0]
   return pageMetadata({
@@ -35,22 +33,20 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   })
 }
 
-const WHATSAPP_NUMBER = "918369051700"
-const EMAIL = "customercarerigo1@gmail.com"
-
-function enquiryLinks(seriesTitle: string, version: Version) {
+function enquiryLinks(seriesTitle: string, version: Version, settings: SiteSettings) {
   const name = version.label ? `${seriesTitle} (${version.label})` : seriesTitle
   const message = `Hi! I'm interested in the ${name}. Can you share more details and pricing?`
   return {
-    whatsapp: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-    email: `mailto:${EMAIL}?subject=${encodeURIComponent(`Enquiry: ${name}`)}&body=${encodeURIComponent(message)}`,
+    whatsapp: `${settings.whatsappUrl}?text=${encodeURIComponent(message)}`,
+    email: `mailto:${settings.emails[0]}?subject=${encodeURIComponent(`Enquiry: ${name}`)}&body=${encodeURIComponent(message)}`,
   }
 }
 
 export default async function SeriesPage({ params }: { params: Promise<Params> }) {
   const { tab: tabSlug, category: categorySlug, series: slug } = await params
-  const series = getSeries(tabSlug, categorySlug, slug)
+  const series = await getSeries(tabSlug, categorySlug, slug)
   if (!series) notFound()
+  const settings = await getSiteSettings()
 
   const { tab, category, versions } = series
   const related = getRelatedSeries(series)
@@ -84,9 +80,10 @@ export default async function SeriesPage({ params }: { params: Promise<Params> }
               {/* Gallery */}
               <div className="min-w-0 lg:sticky lg:top-32 lg:self-start">
                 {versions.map((version, i) => (
-                  <VersionPanel key={version.slug} index={i}>
+                  <VersionPanel key={version.key} index={i}>
                     <ProductGallery
                       images={version.images}
+                      thumbs={version.thumbs}
                       alt={version.label ? `${series.title} — ${version.label}` : series.title}
                     />
                   </VersionPanel>
@@ -105,10 +102,10 @@ export default async function SeriesPage({ params }: { params: Promise<Params> }
                 <VersionSwitch />
 
                 {versions.map((version, i) => {
-                  const links = enquiryLinks(series.title, version)
+                  const links = enquiryLinks(series.title, version, settings)
                   const single = version.variants.length === 1 ? version.variants[0] : null
                   return (
-                    <VersionPanel key={version.slug} index={i}>
+                    <VersionPanel key={version.key} index={i}>
                       <p className="text-xl text-muted-foreground mb-8">{version.subtitle}</p>
                       <p className="text-lg leading-relaxed text-foreground/80 mb-10">{version.description}</p>
 
@@ -171,7 +168,7 @@ export default async function SeriesPage({ params }: { params: Promise<Params> }
                             </div>
                             {version.variantFields.map((field) => (
                               <div key={field} className="flex justify-between gap-6 py-3 border-b border-border">
-                                <dt className="text-muted-foreground">{fieldLabel(field)}</dt>
+                                <dt className="text-muted-foreground">{field}</dt>
                                 <dd className="text-right">{single.values[field]}</dd>
                               </div>
                             ))}
@@ -187,7 +184,7 @@ export default async function SeriesPage({ params }: { params: Promise<Params> }
             {/* Multi-model comparison table */}
             {versions.map((version, i) =>
               version.variants.length > 1 ? (
-                <VersionPanel key={version.slug} index={i}>
+                <VersionPanel key={version.key} index={i}>
                   <div className="mt-24">
                     <h2 className="text-3xl md:text-4xl font-medium tracking-tight mb-3">Specifications</h2>
                     <p className="text-muted-foreground mb-8">
@@ -217,7 +214,7 @@ export default async function SeriesPage({ params }: { params: Promise<Params> }
                                 scope="row"
                                 className="sticky left-0 z-10 bg-white text-left font-normal text-muted-foreground px-5 py-3.5"
                               >
-                                {fieldLabel(field)}
+                                {field}
                               </th>
                               {version.variants.map((v, j) => (
                                 <td key={j} className="px-5 py-3.5 whitespace-nowrap">

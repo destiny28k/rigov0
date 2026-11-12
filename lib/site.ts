@@ -9,9 +9,3 @@ export const SITE_NAME = "RIGO Lighting"
 export const SITE_DESCRIPTION =
   "Premium LED lighting from RIGO: panel lights, downlights, COB, cylinder, track and linear spot lights, plus flood, street, stadium and high-bay lights. Energy-efficient lighting with a 2-year warranty."
 
-export const CONTACT = {
-  phone: "+91-8369051700",
-  whatsapp: "https://wa.me/918369051700",
-  emails: ["customercarerigo1@gmail.com", "jailaxmilightingsolutions@gmail.com"],
-  instagram: "https://instagram.com/rigolighting",
-}

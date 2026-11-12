@@ -4,7 +4,7 @@ import { useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-export function ProductGallery({ images, alt }: { images: string[]; alt: string }) {
+export function ProductGallery({ images, thumbs, alt }: { images: string[]; thumbs?: string[]; alt: string }) {
   const [index, setIndex] = useState(0)
   const count = images.length
   const src = (path: string) => encodeURI(path)
@@ -58,7 +58,7 @@ export function ProductGallery({ images, alt }: { images: string[]; alt: string 
                 i === index ? "border-foreground" : "border-transparent opacity-70 hover:opacity-100",
               )}
             >
-              <img src={src(image)} alt="" loading="lazy" className="w-full h-full object-contain p-1.5" />
+              <img src={src(thumbs?.[i] ?? image)} alt="" loading="lazy" className="w-full h-full object-contain p-1.5" />
             </button>
           ))}
         </div>
