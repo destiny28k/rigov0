@@ -15,7 +15,7 @@ export function Philosophy({
   stats: HomePage["stats"]
 }) {
   return (
-    <section id="why-rigo" className="relative overflow-hidden py-20 md:py-24 bg-primary text-primary-foreground">
+    <section id="why-rigo" className="relative overflow-hidden py-16 md:py-24 bg-primary text-primary-foreground">
       {/* Light effect: a slim "fixture" line at the top casting a soft warm glow over the heading */}
       <div
         aria-hidden

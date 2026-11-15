@@ -11,7 +11,7 @@ export const category = defineType({
       name: "name",
       title: "Name",
       type: "string",
-      description: "e.g. Panel Light, COB Light, Flood Light",
+      description: "e.g. Panel Light, COB Light, Flood Light. Also shown in the Products menu.",
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -47,16 +47,17 @@ export const category = defineType({
     }),
     defineField({
       name: "image",
-      title: "Tile picture",
+      title: "Category picture",
       type: "image",
-      description: "Shown on category tiles. A product cut-out on a transparent background looks best. If empty, the first series' picture is used.",
+      description:
+        "Shown on category tiles and large at the top of the category page. Best: a landscape photo, 1536 × 1024 px, with the series name on the right side (the left side fades into the page header). If empty, the first series' picture is used.",
       options: { hotspot: true },
     }),
     defineField({
       name: "order",
       title: "Order",
       type: "number",
-      description: "Lower numbers appear first.",
+      description: "Lower numbers appear first, on the pages and in the Products menu.",
       initialValue: 100,
     }),
   ],

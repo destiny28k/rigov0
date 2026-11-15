@@ -34,6 +34,7 @@ export default async function Home() {
         detail: detail || seriesSubtitleOf(s),
         category: s.category.name,
         image: s.image,
+        photo: s.photo,
       },
     ]
   })

@@ -77,7 +77,7 @@ export const homePage = defineType({
       title: "Featured products",
       type: "array",
       group: "featured",
-      description: "Six works best. Drag to reorder.",
+      description: "Six works best (two rows of three). Drag to reorder.",
       of: [
         defineArrayMember({
           type: "object",
@@ -127,7 +127,15 @@ export const homePage = defineType({
 
     defineField({ name: "aboutHeading", title: "Heading", type: "string", group: "about" }),
     defineField({ name: "aboutText", title: "Text", type: "text", rows: 4, group: "about" }),
-    defineField({ name: "aboutImage", title: "Photo", type: "image", options: { hotspot: true }, group: "about" }),
+    defineField({
+      name: "aboutImage",
+      title: "Photo",
+      type: "image",
+      description:
+        "Shown as a wide strip across the page. Use a landscape photo at least 2000 px wide; the top and bottom are trimmed on large screens, so keep the subject in the middle.",
+      options: { hotspot: true },
+      group: "about",
+    }),
     defineField({
       name: "values",
       title: "Values",

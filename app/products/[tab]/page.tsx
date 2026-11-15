@@ -4,9 +4,8 @@ import { notFound } from "next/navigation"
 import { ArrowRight } from "lucide-react"
 import { SiteHeader } from "@/components/site-header"
 import { Footer } from "@/components/footer"
-import { HighlightedText } from "@/components/highlighted-text"
-import { Breadcrumbs } from "@/components/breadcrumbs"
 import { CategoryGrid } from "@/components/category-grid"
+import { CatalogHero } from "@/components/catalog-hero"
 import { getCatalog, getTab } from "@/lib/catalog"
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo"
 import { JsonLd } from "@/components/json-ld"
@@ -39,17 +38,23 @@ export default async function TabPage({ params }: { params: Promise<Params> }) {
       />
       <SiteHeader />
 
-      <section className="pt-36 pb-32 md:pt-44">
-        <div className="container mx-auto px-6 md:px-12">
-          <Breadcrumbs items={[{ name: "Products", href: "/products" }, { name: tab.name }]} />
+      <CatalogHero
+        crumbs={[{ name: "Products", href: "/products" }, { name: tab.name }]}
+        eyebrow="Products"
+        title={`${tab.name} lighting`}
+        description={tab.description}
+        stats={[
+          { value: tab.categories.length, label: "Categories" },
+          { value: tab.categories.reduce((n, c) => n + c.series.length, 0), label: "Series" },
+        ]}
+        image={tab.categories[0]?.image}
+        photo={tab.categories[0]?.photo}
+        linksLabel={`${tab.name} categories`}
+        links={tab.categories.map((c) => ({ name: c.name, href: c.href }))}
+      />
 
-          <div className="max-w-3xl mb-16">
-            <p className="text-muted-foreground text-sm tracking-[0.3em] uppercase mb-6">Products</p>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-medium leading-[1.1] tracking-tight mb-6 text-balance">
-              {tab.name} <HighlightedText>lighting</HighlightedText>
-            </h1>
-            <p className="text-muted-foreground text-lg leading-relaxed">{tab.description}</p>
-          </div>
+      <section className="pt-12 pb-32 md:pt-16">
+        <div className="container mx-auto px-6 md:px-12">
 
           <CategoryGrid categories={tab.categories} />
 

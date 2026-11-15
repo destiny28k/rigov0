@@ -10,6 +10,8 @@ export type FeaturedItem = {
   detail: string
   category: string
   image: string
+  /** Full photo (fills the tile) vs. cut-out (shown whole with padding) */
+  photo: boolean
 }
 
 
@@ -41,11 +43,11 @@ export function Projects({ items: projects }: { items: FeaturedItem[] }) {
   }, [projects])
 
   return (
-    <section id="projects" className="py-32 md:py-29 bg-secondary/50">
+    <section id="projects" className="py-12 md:py-20 bg-secondary/50">
       <div className="container mx-auto px-6 md:px-12">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 md:mb-10">
           <div>
-            <p className="text-muted-foreground text-sm tracking-[0.3em] uppercase mb-6">Our Collection</p>
+            <p className="text-muted-foreground text-sm tracking-[0.3em] uppercase mb-3">Our Collection</p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight">Featured Products</h2>
           </div>
           <Link
@@ -57,7 +59,7 @@ export function Projects({ items: projects }: { items: FeaturedItem[] }) {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-7 sm:gap-x-5 sm:gap-y-8 md:gap-x-6 md:gap-y-9">
           {projects.map((project, index) => (
             <Link
               href={project.href}
@@ -66,11 +68,22 @@ export function Projects({ items: projects }: { items: FeaturedItem[] }) {
               onMouseEnter={() => setHoveredId(project.href)}
               onMouseLeave={() => setHoveredId(null)}
             >
-              <div ref={(el) => { imageRefs.current[index] = el }} className="relative overflow-hidden aspect-square mb-4 sm:mb-6 bg-white rounded-2xl">
+              <div ref={(el) => { imageRefs.current[index] = el }} className="relative overflow-hidden aspect-[4/3] mb-3 sm:mb-4 bg-white rounded-2xl">
+                {/* Same frame for every card; photos shown whole over a blurred copy of themselves */}
+                {project.photo && (
+                  <img
+                    src={project.image}
+                    alt=""
+                    aria-hidden
+                    className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl"
+                  />
+                )}
                 <img
                   src={project.image || "/placeholder.svg"}
                   alt={project.title}
-                  className={`w-full h-full object-contain p-5 sm:p-10 transition-transform duration-700 ${
+                  className={`relative w-full h-full object-contain transition-transform duration-700 ${
+                    project.photo ? "" : "p-5 sm:p-10"
+                  } ${
                     hoveredId === project.href ? "scale-105" : "scale-100"
                   }`}
                 />
@@ -85,7 +98,7 @@ export function Projects({ items: projects }: { items: FeaturedItem[] }) {
 
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="text-base sm:text-xl font-medium mb-1 sm:mb-2 group-hover:underline underline-offset-4">{project.title}</h3>
+                  <h3 className="text-base sm:text-xl font-medium mb-0.5 sm:mb-1 group-hover:underline underline-offset-4">{project.title}</h3>
                   <p className="text-muted-foreground text-sm">
                     {project.detail}
                   </p>

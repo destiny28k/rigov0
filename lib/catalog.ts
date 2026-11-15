@@ -22,9 +22,13 @@ export type Version = {
   description: string
   /** Card picture URL */
   image: string
+  /** True when the card picture is a full photo (no transparency), so it fills the card edge to edge */
+  photo: boolean
   /** Gallery photo URLs and matching thumbnail URLs */
   images: string[]
   thumbs: string[]
+  /** Per gallery photo: true for a full photo (gets a blurred fill instead of empty space), false for a cut-out */
+  galleryPhotos: boolean[]
   features: string[]
   /** Key specs shown at the top of the product page */
   summary: SpecRow[]
@@ -41,6 +45,7 @@ export type Series = {
   title: string
   href: string
   image: string
+  photo: boolean
   tab: Tab
   category: Category
   versions: Version[]
@@ -53,6 +58,7 @@ export type Category = {
   description: string
   href: string
   image: string
+  photo: boolean
   tab: Tab
   series: Series[]
 }
@@ -86,22 +92,25 @@ type RawVersion = {
   label?: string
   subtitle?: string
   description?: string
-  cardImage?: SanityImage
-  images?: SanityImage[]
+  cardImage?: CardSanityImage
+  images?: CardSanityImage[]
   features?: string[]
   highlights?: RawSpec[]
   models?: { modelNo?: string; specs?: RawSpec[] }[]
 }
-type RawCategory = { _id: string; name: string; tab: ProductTab; slug: string; description?: string; image?: SanityImage }
+/** `opaque` comes from the asset metadata: true for photos, false for cut-outs with a transparent background */
+type CardSanityImage = SanityImage & { opaque?: boolean }
+type RawCategory = { _id: string; name: string; tab: ProductTab; slug: string; description?: string; image?: CardSanityImage }
 type RawSeries = { _id: string; name: string; title?: string; slug: string; categoryId: string; versions?: RawVersion[] }
 
 const CATALOG_QUERY = `{
   "categories": *[_type == "category" && defined(slug.current) && tab in ["indoor", "outdoor"]]
-    | order(order asc, name asc) { _id, name, tab, description, image, "slug": slug.current },
+    | order(order asc, name asc) { _id, name, tab, description, image { ..., "opaque": asset->metadata.isOpaque }, "slug": slug.current },
   "series": *[_type == "series" && hidden != true && defined(slug.current) && defined(category._ref)]
     | order(order asc, name asc) {
       _id, name, title, "slug": slug.current, "categoryId": category._ref,
-      versions[] { _key, label, subtitle, description, cardImage, images, features,
+      versions[] { _key, label, subtitle, description, features,
+        cardImage { ..., "opaque": asset->metadata.isOpaque }, images[] { ..., "opaque": asset->metadata.isOpaque },
         highlights[] { label, value }, models[] { modelNo, specs[] { label, value } } }
     }
 }`
@@ -144,8 +153,10 @@ function buildVersion(raw: RawVersion): Version | null {
     subtitle: (raw.subtitle ?? "").trim(),
     description: (raw.description ?? "").trim(),
     image: imageUrl(card, 800),
+    photo: card.opaque === true,
     images: photos.length ? photos.map((img) => imageUrl(img, 1600)) : [imageUrl(card, 1600)],
     thumbs: photos.length ? photos.map((img) => imageUrl(img, 200)) : [imageUrl(card, 200)],
+    galleryPhotos: photos.length ? photos.map((img) => img.opaque === true) : [card.opaque === true],
     features: (raw.features ?? []).map((f) => f.trim()).filter(Boolean),
     summary: cleanRows(raw.highlights),
     variantFields: [...fieldByKey.values()],
@@ -169,6 +180,7 @@ async function loadCatalog(): Promise<Tab[]> {
           description: raw.description ?? "",
           href: `${tab.href}/${raw.slug}`,
           image: "",
+          photo: false,
           tab,
           series: [],
         }
@@ -183,6 +195,7 @@ async function loadCatalog(): Promise<Tab[]> {
               title: s.title?.trim() || `${s.name} Series`,
               href: `${category.href}/${s.slug}`,
               image: versions[0]?.image ?? "",
+              photo: versions[0]?.photo ?? false,
               tab,
               category,
               versions,
@@ -190,6 +203,7 @@ async function loadCatalog(): Promise<Tab[]> {
           })
           .filter((s) => s.versions.length > 0)
         category.image = raw.image?.asset ? imageUrl(raw.image, 800) : (category.series[0]?.image ?? "")
+        category.photo = raw.image?.asset ? raw.image.opaque === true : (category.series[0]?.photo ?? false)
         return category
       })
       .filter((c) => c.series.length > 0)
@@ -234,8 +248,13 @@ export function seriesSubtitle(series: Series) {
 }
 
 /** Lightweight menu structure for the header (safe to pass to client components). */
-export type MenuTab = { name: string; href: string }
+export type MenuTab = { name: string; href: string; categories: { name: string; href: string }[] }
 
+/** Navbar data: Indoor / Outdoor, each with its categories (Panel Light, DownLight, …). */
 export async function getMenu(): Promise<MenuTab[]> {
-  return (await getCatalog()).map((tab) => ({ name: tab.name, href: tab.href }))
+  return (await getCatalog()).map((tab) => ({
+    name: tab.name,
+    href: tab.href,
+    categories: tab.categories.map((c) => ({ name: c.name, href: c.href })),
+  }))
 }

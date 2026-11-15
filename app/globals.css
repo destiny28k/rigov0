@@ -145,3 +145,54 @@
   stroke-dashoffset: 1000;
   animation: draw-stroke 1.5s ease-out forwards;
 }
+
+/* Catalogue hero: text rises in one line after another; the picture settles with a slow zoom */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes hero-zoom {
+  from {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.hero-rise {
+  animation: hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hero-zoom {
+  animation: hero-zoom 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise,
+  .hero-zoom {
+    animation: none;
+  }
+}
+
+/*
+ * Catalogue hero photo (desktop): melts into the dark panel. It fades in from the left, and the top-left
+ * corner, where the photos carry a printed logo, is faded out too, so a half-cut logo never shows.
+ */
+.hero-photo {
+  /* Anchored right: if the photo is wider than its area, only the faded left side is trimmed */
+  object-position: right center;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 4%, black 34%),
+    radial-gradient(ellipse 58% 42% at 0% 0%, transparent 70%, black 100%);
+  mask-image:
+    linear-gradient(to right, transparent 4%, black 34%),
+    radial-gradient(ellipse 58% 42% at 0% 0%, transparent 70%, black 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}

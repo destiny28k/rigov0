@@ -3,9 +3,8 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { SiteHeader } from "@/components/site-header"
 import { Footer } from "@/components/footer"
-import { HighlightedText } from "@/components/highlighted-text"
-import { Breadcrumbs } from "@/components/breadcrumbs"
 import { CategoryGrid } from "@/components/category-grid"
+import { CatalogHero } from "@/components/catalog-hero"
 import { getCatalog } from "@/lib/catalog"
 import { pageMetadata } from "@/lib/seo"
 
@@ -18,26 +17,30 @@ export const metadata: Metadata = pageMetadata({
 
 export default async function ProductsPage() {
   const catalog = await getCatalog()
+  const allCategories = catalog.flatMap((tab) => tab.categories)
   return (
     <main className="min-h-screen">
       <SiteHeader />
 
-      <section className="pt-36 pb-32 md:pt-44">
+      <CatalogHero
+        crumbs={[{ name: "Home", href: "/" }, { name: "Products" }]}
+        eyebrow="Our Collection"
+        title="All products"
+        description="Energy-efficient LED lighting for every space — from homes and offices to streets, warehouses and stadiums."
+        stats={[
+          { value: allCategories.length, label: "Categories" },
+          { value: allCategories.reduce((n, c) => n + c.series.length, 0), label: "Series" },
+        ]}
+        image={allCategories[0]?.image}
+        photo={allCategories[0]?.photo}
+        linksLabel="Product ranges"
+        links={catalog.map((tab) => ({ name: `${tab.name} lighting`, href: `#${tab.slug}` }))}
+      />
+
+      <section className="pt-12 pb-32 md:pt-16">
         <div className="container mx-auto px-6 md:px-12">
-          <Breadcrumbs items={[{ name: "Home", href: "/" }, { name: "Products" }]} />
 
-          <div className="max-w-3xl mb-20">
-            <p className="text-muted-foreground text-sm tracking-[0.3em] uppercase mb-6">Our Collection</p>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-medium leading-[1.1] tracking-tight mb-6 text-balance">
-              All <HighlightedText>products</HighlightedText>
-            </h1>
-            <p className="text-muted-foreground text-lg leading-relaxed">
-              Energy-efficient LED lighting for every space — from homes and offices to streets, warehouses and
-              stadiums. Choose a category to explore its series.
-            </p>
-          </div>
-
-          <div className="space-y-28">
+          <div className="space-y-24 pt-4">
             {catalog.map((tab) => (
               <section key={tab.slug} id={tab.slug} aria-labelledby={`${tab.slug}-heading`} className="scroll-mt-32">
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12 pb-6 border-b border-border">

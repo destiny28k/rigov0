@@ -7,9 +7,9 @@ import { imageSrc } from "@/lib/products"
 export async function ShopByCategory() {
   const catalog = await getCatalog()
   return (
-    <section id="range" className="py-32 md:py-29">
+    <section id="range" className="pt-12 pb-16 md:py-29">
       <div className="container mx-auto px-6 md:px-12">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-16">
           <div>
             <p className="text-muted-foreground text-sm tracking-[0.3em] uppercase mb-6">Our Range</p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight">Shop by category</h2>
@@ -41,11 +41,22 @@ export async function ShopByCategory() {
                 {tab.categories.map((category) => (
                   <Link key={category.href} href={category.href} className="group block">
                     <div className="relative aspect-[4/3] mb-4 bg-white rounded-2xl border border-border/60 overflow-hidden">
+                      {category.photo && (
+                        <img
+                          src={imageSrc(category.image)}
+                          alt=""
+                          aria-hidden
+                          loading="lazy"
+                          className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl"
+                        />
+                      )}
                       <img
                         src={imageSrc(category.image)}
                         alt={category.name}
                         loading="lazy"
-                        className="w-full h-full object-contain p-5 sm:p-8 transition-transform duration-700 group-hover:scale-105"
+                        className={`relative w-full h-full object-contain transition-transform duration-700 group-hover:scale-105 ${
+                          category.photo ? "" : "p-5 sm:p-8"
+                        }`}
                       />
                     </div>
                     <div className="flex items-start justify-between gap-3">

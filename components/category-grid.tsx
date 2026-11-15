@@ -13,6 +13,7 @@ export function CategoryGrid({ categories }: { categories: Category[] }) {
             subtitle: category.series.map((s) => s.name).join(" · "),
             tag: `${category.series.length} series`,
             image: category.image,
+            photo: category.photo,
           }}
         />
       ))}

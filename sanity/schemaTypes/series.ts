@@ -77,14 +77,16 @@ export const productVersion = defineType({
       name: "cardImage",
       title: "Card picture",
       type: "image",
-      description: "Shown on product cards. A cut-out on a transparent background looks best. If empty, the first photo is used.",
+      description:
+        "Shown on product cards. Best: a landscape photo, 1536 × 1024 px, with the logo and name away from the edges. If empty, the first photo is used.",
       options: { hotspot: true },
     }),
     defineField({
       name: "images",
       title: "Photos",
       type: "array",
-      description: "Gallery on the product page. Drag to reorder; the first one is shown first.",
+      description:
+        "Gallery on the product page. Drag to reorder; the first one is shown first. Best size: 1536 × 1024 px (landscape), the same for every photo.",
       of: [defineArrayMember({ type: "image", options: { hotspot: true } })],
       options: { layout: "grid" },
       validation: (rule) => rule.required().min(1),

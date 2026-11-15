@@ -40,22 +40,22 @@ export function Hero() {
       {/* The film's titles aren't readable by search engines or screen readers, so describe the page here */}
       <h1 className="sr-only">RIGO LED Lighting — premium LED lights for homes, offices and outdoor spaces</h1>
 
-      <div className="relative w-full overflow-hidden bg-[#f1ece4] aspect-video md:aspect-auto md:h-[min(100svh,56.25vw)] md:min-h-[480px]">
+      <div className="relative w-full overflow-hidden bg-[#0f0f10] aspect-video md:aspect-auto md:h-[min(100svh,56.25vw)] md:min-h-[480px]">
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
-          poster="/videos/rigo-brand-poster.jpg"
+          poster="/videos/rigo-hero-poster.jpg"
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
-          aria-label="RIGO product film: the downlight, panel light, and flood and street light collections"
+          aria-label="RIGO product film showcasing the lighting collections"
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
         >
-          <source src="/videos/rigo-brand-1080.mp4" type="video/mp4" media="(min-width: 768px)" />
-          <source src="/videos/rigo-brand-720.mp4" type="video/mp4" />
+          <source src="/videos/rigo-hero-1080.mp4" type="video/mp4" media="(min-width: 768px)" />
+          <source src="/videos/rigo-hero-720.mp4" type="video/mp4" />
         </video>
 
         {/* Scroll cue (desktop) */}

@@ -65,7 +65,7 @@ export default async function SeriesPage({ params }: { params: Promise<Params> }
       <SiteHeader />
 
       <VersionProvider labels={versions.map((v) => v.label)} anchors={versions.map((v) => v.anchor)}>
-        <section className="pt-36 pb-24 md:pt-44">
+        <section className="pt-32 pb-24 md:pt-36">
           <div className="container mx-auto px-6 md:px-12">
             <Breadcrumbs
               items={[
@@ -84,6 +84,7 @@ export default async function SeriesPage({ params }: { params: Promise<Params> }
                     <ProductGallery
                       images={version.images}
                       thumbs={version.thumbs}
+                      photos={version.galleryPhotos}
                       alt={version.label ? `${series.title} — ${version.label}` : series.title}
                     />
                   </VersionPanel>
@@ -259,6 +260,7 @@ export default async function SeriesPage({ params }: { params: Promise<Params> }
                     subtitle: seriesSubtitle(s),
                     tag: s.category.name,
                     image: s.image,
+                    photo: s.photo,
                   }}
                 />
               ))}
